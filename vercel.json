@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd greenline-website && npm install && npm run build",
+  "outputDirectory": "greenline-website/out",
+  "installCommand": "echo 'install handled in buildCommand'"
+}
