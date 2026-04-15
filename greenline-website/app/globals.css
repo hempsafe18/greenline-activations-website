@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-body text-dark bg-white;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-block bg-green text-white font-sans font-semibold px-8 py-3 rounded-lg hover:bg-green-dark transition-colors duration-200;
+  }
+  .btn-secondary {
+    @apply inline-block border-2 border-green text-green font-sans font-semibold px-8 py-3 rounded-lg hover:bg-green hover:text-white transition-colors duration-200;
+  }
+  .btn-coral {
+    @apply inline-block bg-coral text-white font-sans font-semibold px-8 py-3 rounded-lg hover:bg-coral-dark transition-colors duration-200;
+  }
+  .section {
+    @apply py-20 px-4;
+  }
+  .container-lg {
+    @apply max-w-6xl mx-auto;
+  }
+  .card {
+    @apply bg-white rounded-2xl p-8 shadow-sm border border-gray-100;
+  }
+  .tag {
+    @apply inline-block text-sm font-sans font-semibold text-green bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide;
+  }
+}
