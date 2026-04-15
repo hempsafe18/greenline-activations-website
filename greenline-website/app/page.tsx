@@ -198,7 +198,7 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex-shrink-0">
-              <Link href="/schedule-an-intro-call" className="btn-coral text-base">
+              <Link href="https://hempsafe.org" className="btn-coral text-base" target="_blank" rel="noopener noreferrer">
                 Learn About HempSafe™
               </Link>
             </div>
