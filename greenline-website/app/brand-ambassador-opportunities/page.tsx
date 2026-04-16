@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Brand Ambassador Opportunities",
@@ -96,6 +97,50 @@ export default function BrandAmbassadorOpportunitiesPage() {
         </div>
       </section>
 
+      {/* Ambassador photos */}
+      <section className="pb-4">
+        <div className="container-lg">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="overflow-hidden rounded-xl">
+              <Image
+                src="/images/6.png"
+                alt="Brand ambassador in-store activation"
+                width={400}
+                height={500}
+                className="object-cover w-full h-[280px]"
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl">
+              <Image
+                src="/images/10.png"
+                alt="Ambassador sampling product with customer"
+                width={400}
+                height={500}
+                className="object-cover w-full h-[280px]"
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl">
+              <Image
+                src="/images/9.png"
+                alt="Ambassador connecting with store customer"
+                width={400}
+                height={500}
+                className="object-cover w-full h-[280px]"
+              />
+            </div>
+            <div className="overflow-hidden rounded-xl">
+              <Image
+                src="/images/7.png"
+                alt="Brand ambassador holding 3CHI cannabis seltzer"
+                width={400}
+                height={500}
+                className="object-cover w-full h-[280px]"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Roles */}
       <section className="section">
         <div className="container-lg">
@@ -158,10 +203,19 @@ export default function BrandAmbassadorOpportunitiesPage() {
               <h2 className="text-4xl font-bold text-dark mt-3 mb-6">
                 What We&apos;re <span className="text-green">Looking For</span>
               </h2>
-              <p className="font-body text-gray-600 leading-relaxed">
+              <p className="font-body text-gray-600 leading-relaxed mb-8">
                 We care less about your resume and more about your energy, reliability, and ability to connect with people.
                 If you love talking to people about products you believe in, you&apos;ll thrive here.
               </p>
+              <div className="overflow-hidden rounded-2xl">
+                <Image
+                  src="/images/8.png"
+                  alt="Greenline brand ambassador at activation"
+                  width={560}
+                  height={650}
+                  className="object-cover w-full h-[340px]"
+                />
+              </div>
             </div>
             <ul className="space-y-3">
               {requirements.map((req) => (

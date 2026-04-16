@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Florida Field Marketing for Beverage Brands",
@@ -71,28 +72,39 @@ export default function HomePage() {
       {/* Hero */}
       <section className="bg-cream section">
         <div className="container-lg">
-          <div className="max-w-3xl">
-            <span className="tag mb-6">Florida Field Marketing</span>
-            <h1 className="text-5xl md:text-6xl font-bold text-dark leading-tight mt-4 mb-6">
-              Magnify Your{" "}
-              <span className="text-green">Retail Presence</span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl font-body">
-              Field marketing, sampling, and retail execution for hemp and functional beverage brands.
-              Drive sell-through, protect shelf space, and move inventory faster —
-              without the hiring headaches.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/schedule-an-intro-call" className="btn-primary text-base">
-                Schedule a Free Call
-              </Link>
-              <Link href="/pilot-program" className="btn-secondary text-base">
-                Launch a Pilot
-              </Link>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="tag mb-6">Florida Field Marketing</span>
+              <h1 className="text-5xl md:text-6xl font-bold text-dark leading-tight mt-4 mb-6">
+                Magnify Your{" "}
+                <span className="text-green">Retail Presence</span>
+              </h1>
+              <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl font-body">
+                Field marketing, sampling, and retail execution for hemp and functional beverage brands.
+                Drive sell-through, protect shelf space, and move inventory faster —
+                without the hiring headaches.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Link href="/schedule-an-intro-call" className="btn-primary text-base">
+                  Schedule a Free Call
+                </Link>
+                <Link href="/pilot-program" className="btn-secondary text-base">
+                  Launch a Pilot
+                </Link>
+              </div>
+              <p className="text-sm text-gray-500 mt-5 font-body">
+                No long-term contracts. No hiring headaches. Just results.
+              </p>
             </div>
-            <p className="text-sm text-gray-500 mt-5 font-body">
-              No long-term contracts. No hiring headaches. Just results.
-            </p>
+            <div className="hidden md:block">
+              <Image
+                src="/images/1.png"
+                alt="Brand ambassador at retail activation"
+                width={600}
+                height={750}
+                className="rounded-2xl object-cover w-full h-[540px]"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -107,6 +119,50 @@ export default function HomePage() {
                 <div className="text-green-100 text-sm font-body mt-1">{stat.label}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Activations gallery */}
+      <section className="section">
+        <div className="container-lg">
+          <div className="text-center mb-10">
+            <span className="tag mb-4">Real Work</span>
+            <h2 className="text-4xl font-bold text-dark mt-3">
+              Activations <span className="text-green">Across Florida</span>
+            </h2>
+            <p className="text-gray-600 mt-4 max-w-xl mx-auto font-body">
+              From smoke shops to liquor stores to natural grocers — our ambassadors show up trained, branded, and ready to sell.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="overflow-hidden rounded-2xl">
+              <Image
+                src="/images/2.png"
+                alt="3CHI demo table activation at retail"
+                width={600}
+                height={750}
+                className="object-cover w-full h-[400px] hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="overflow-hidden rounded-2xl">
+              <Image
+                src="/images/3.png"
+                alt="Señorita THC beverage demo at liquor store"
+                width={600}
+                height={750}
+                className="object-cover w-full h-[400px] hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="overflow-hidden rounded-2xl">
+              <Image
+                src="/images/4.png"
+                alt="Cannabis beverage retail shelf placement"
+                width={600}
+                height={750}
+                className="object-cover w-full h-[400px] hover:scale-105 transition-transform duration-300"
+              />
+            </div>
           </div>
         </div>
       </section>
