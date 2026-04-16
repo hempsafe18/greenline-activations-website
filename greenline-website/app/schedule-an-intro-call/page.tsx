@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Schedule an Intro Call",
@@ -90,35 +91,20 @@ export default function ScheduleIntroCallPage() {
               </div>
             </div>
 
-            {/* Right: Calendly embed */}
+            {/* Right: HubSpot meetings embed */}
             <div className="card p-0 overflow-hidden">
               <div className="bg-green p-6 text-white text-center">
                 <h3 className="font-sans font-bold text-xl">Book Your 15-Minute Call</h3>
                 <p className="font-body text-green-100 text-sm mt-1">Pick a time that works for you</p>
               </div>
-              {/* Calendly inline widget */}
               <div
-                className="calendly-inline-widget"
-                data-url="https://calendly.com/greenlineactivations/intro-call?hide_event_type_details=1&hide_gdpr_banner=1"
-                style={{ minWidth: "320px", height: "630px" }}
+                className="meetings-iframe-container"
+                data-src="https://greenlineactivations.com/meetings/greenline-activations/intro-call-calendar?embed=true"
               />
-              <script
-                type="text/javascript"
-                src="https://assets.calendly.com/assets/external/widget.js"
-                async
+              <Script
+                src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"
+                strategy="afterInteractive"
               />
-              {/* Fallback if Calendly isn't configured yet */}
-              <noscript>
-                <div className="p-8 text-center">
-                  <p className="font-body text-gray-600 mb-4">Please enable JavaScript to use the booking widget.</p>
-                  <a
-                    href="mailto:hello@greenlineactivations.com"
-                    className="btn-primary"
-                  >
-                    Email Us Instead
-                  </a>
-                </div>
-              </noscript>
             </div>
           </div>
         </div>
