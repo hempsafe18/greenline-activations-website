@@ -76,8 +76,8 @@ export default function HomePage() {
             <div>
               <span className="tag mb-6">Florida Field Marketing</span>
               <h1 className="text-5xl md:text-6xl font-bold text-dark leading-tight mt-4 mb-6">
-                Magnify Your{" "}
-                <span className="text-green">Retail Presence</span>
+               Stop Losing Shelf Space{" "}
+                <span className="text-green">to Slow-Moving Inventory </span>
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl font-body">
                 Field marketing, sampling, and retail execution for hemp and functional beverage brands.
