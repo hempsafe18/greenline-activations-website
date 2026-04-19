@@ -51,7 +51,7 @@ export default function FloridaRetailActivationChecklistPage() {
             </div>
             <div className="flex justify-center">
               <Image
-                src="/images/greenline-checklist-mockup.jpg"
+                src="/images/greenline-checklist.png"
                 alt="Florida Retail Activation Checklist preview"
                 width={600}
                 height={350}
