@@ -4,9 +4,10 @@ import { useState, useCallback } from "react";
 import Link from "next/link";
 
 const getCostPerActivation = (activations: number) => {
-  if (activations >= 60) return 180;
-  if (activations >= 30) return 190;
-  return 200;
+  if (activations >= 60) return 165;
+  if (activations >= 30) return 180;
+  if (activations >= 12) return 190;
+  return 200; // Test Pilot (1–6)
 };
 
 const fmt = (n: number) => "$" + Math.round(n).toLocaleString();
@@ -37,10 +38,10 @@ interface CalcResult {
 }
 
 export default function ROICalculatorPage() {
-  const [acts, setActs] = useState(20);
+  const [acts, setActs] = useState(12);
   const [sampled, setSampled] = useState(50);
-  const [conv, setConv] = useState(50);
-  const [price, setPrice] = useState(16);
+  const [conv, setConv] = useState(40);
+  const [price, setPrice] = useState(15);
 
   const calculate = useCallback((): CalcResult => {
     const costPerAct = getCostPerActivation(acts);
@@ -75,7 +76,7 @@ export default function ROICalculatorPage() {
   }, [acts, sampled, conv, price]);
 
   const data = calculate();
-  const sprintLabel = acts >= 60 ? "Sprint 3" : acts >= 30 ? "Sprint 2" : "Sprint 1";
+  const sprintLabel = acts >= 60 ? "Sprint 3" : acts >= 30 ? "Sprint 2" : acts >= 12 ? "Sprint 1" : "Test Pilot";
 
   const comparisonRows: [string, string, string, string, string][] = [
     ["Price per activation", "$180–$200", "$150–180", "$100–150", "$300+ (loaded)"],
@@ -129,10 +130,10 @@ export default function ROICalculatorPage() {
               <SliderField
                 label="Number of activations"
                 value={acts}
-                min={12} max={72} step={6}
+                min={6} max={72} step={6}
                 display={String(acts)}
                 onChange={setActs}
-                rangeLabels={["12", "72"]}
+                rangeLabels={["6", "72"]}
               />
               <SliderField
                 label="Avg consumers sampled per event"
@@ -145,18 +146,18 @@ export default function ROICalculatorPage() {
               <SliderField
                 label="Sample-to-purchase conversion"
                 value={conv}
-                min={40} max={90} step={5}
+                min={20} max={90} step={5}
                 display={`${conv}%`}
                 onChange={setConv}
-                rangeLabels={["40%", "90%"]}
+                rangeLabels={["20%", "90%"]}
               />
               <SliderField
                 label="Avg retail price per unit"
                 value={price}
-                min={6} max={20} step={1}
+                min={12} max={40} step={1}
                 display={fmt(price)}
                 onChange={setPrice}
-                rangeLabels={["$6", "$20"]}
+                rangeLabels={["$12", "$40"]}
               />
             </div>
 
