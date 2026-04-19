@@ -213,7 +213,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
                   alt="Greenline brand ambassador at activation"
                   width={560}
                   height={650}
-                  className="object-cover w-full h-[340px]"
+                  className="object-cover w-full h-auto"
                 />
               </div>
             </div>
