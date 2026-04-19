@@ -98,7 +98,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
       </section>
 
       {/* Ambassador photos */}
-      <section className="pb-4">
+      <section className="py-4">
         <div className="container-lg">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="overflow-hidden rounded-xl">
