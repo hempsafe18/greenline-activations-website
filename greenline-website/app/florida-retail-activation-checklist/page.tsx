@@ -106,8 +106,8 @@ export default function FloridaRetailActivationChecklistPage() {
                       // @ts-expect-error hbspt is loaded by the HubSpot script
                       window.hbspt.forms.create({
                         region: "na1",
-                        portalId: "YOUR_PORTAL_ID",
-                        formId: "YOUR_FORM_ID",
+                        portalId: "47886643",
+                        formId: "d4067321-44af-4a1f-9436-ddba2ae96392",
                         target: "#hubspot-checklist-form",
                       });
                     }
