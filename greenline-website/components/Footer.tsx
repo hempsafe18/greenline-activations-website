@@ -33,7 +33,7 @@ export default function Footer() {
               <li><Link href="/brand-ambassador-opportunities" className="hover:text-green transition-colors">Ambassador Opportunities</Link></li>
               <li><Link href="/ambassador-rewards-program" className="hover:text-green transition-colors">Rewards Program</Link></li>
               <li><Link href="/brand-ambassador-application" className="hover:text-green transition-colors">Apply Now</Link></li>
-              <li><Link href="/https://hempsafe.org" className="hover:text-green transition-colors">Get HempSafe™ Certified</Link></li>
+              <li><Link href="https://hempsafe.org" className="hover:text-green transition-colors" target="_blank" rel="noopener noreferrer">Get HempSafe™ Certified</Link></li>
             </ul>
           </div>
         </div>
