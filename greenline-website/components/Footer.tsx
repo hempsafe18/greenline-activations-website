@@ -21,7 +21,6 @@ export default function Footer() {
             <h4 className="font-sans font-semibold text-sm uppercase tracking-wider text-gray-400 mb-4">Services</h4>
             <ul className="space-y-2 text-sm text-gray-300">
               <li><Link href="/pilot-program" className="hover:text-green transition-colors">Pilot Program</Link></li>
-              <li><Link href="/florida-retail-activation-checklist" className="hover:text-green transition-colors">Activation Checklist</Link></li>
               <li><Link href="/retail-activation-roi-calculator" className="hover:text-green transition-colors">ROI Calculator</Link></li>
               <li><Link href="/schedule-an-intro-call" className="hover:text-green transition-colors">Schedule a Call</Link></li>
             </ul>

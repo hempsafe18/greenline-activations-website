@@ -1,64 +1,32 @@
-import type { Metadata } from "next";
+"use client";
+
+import Script from "next/script";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Florida Retail Activation Checklist",
-  description:
-    "A step-by-step activation checklist for beverage brands running retail demos and sampling events in Florida. From pre-event setup to post-event reporting.",
-};
-
-const checklistSections = [
+const phases = [
   {
     phase: "Pre-Activation (48–72 hrs out)",
-    color: "bg-green-50 border-green",
-    items: [
-      "Confirm account contact and demo date/time",
-      "Verify product inventory is at location (or arrange delivery)",
-      "Confirm ambassador assignment and brief on brand talking points",
-      "Review HempSafe™ compliance requirements for the account type",
-      "Prepare sampling supplies (cups, napkins, branded materials, permits if required)",
-      "Set up ambassador profile with activation details",
-      "Review account planogram — confirm shelf placement expectations",
-    ],
+    count: 7,
+    color: "border-green",
+    preview: "Inventory confirmation, ambassador briefing, HempSafe™ compliance review, and more.",
   },
   {
     phase: "Day-of Setup",
-    color: "bg-blue-50 border-blue-300",
-    items: [
-      "Arrive 15–20 min early for setup",
-      "Check in with store manager/buyer",
-      "Set up sampling table with branded materials",
-      "Confirm product is cold (if applicable) and inventory count is accurate",
-      "Review day goals: units to sample, conversations to have, accounts to mention",
-      "Verify ambassador ID for age-gated products",
-      "Document pre-activation shelf photo",
-    ],
+    count: 7,
+    color: "border-blue-300",
+    preview: "Store manager check-in, table setup, product readiness, and pre-activation documentation.",
   },
   {
     phase: "During Activation",
-    color: "bg-coral/10 border-coral",
-    items: [
-      "Sample every customer who passes — no passive standing",
-      "Log conversations and conversions in activation tracker",
-      "Replenish product from back stock as needed",
-      "Note competitive brand presence and pricing",
-      "Address any account questions about reorder process",
-      "Follow all state sampling regulations (no alcohol pairings for hemp)",
-      "Maintain a clean, professional table and appearance",
-    ],
+    count: 7,
+    color: "border-coral",
+    preview: "Conversion tracking, compliance protocols, competitive notes, and account relationship steps.",
   },
   {
     phase: "Post-Activation Wrap-Up",
-    color: "bg-green-50 border-green",
-    items: [
-      "Count remaining inventory and record units sampled",
-      "Document post-activation shelf photo",
-      "Confirm reorder intent with store manager",
-      "Submit activation recap (units, conversations, feedback, photos)",
-      "Flag any compliance issues or account concerns",
-      "Return any unused sampling supplies",
-      "Log debrief notes for next activation at this account",
-    ],
+    count: 7,
+    color: "border-green",
+    preview: "Inventory reconciliation, reorder confirmation, recap submission, and debrief notes.",
   },
 ];
 
@@ -68,101 +36,98 @@ export default function FloridaRetailActivationChecklistPage() {
       {/* Hero */}
       <section className="section bg-cream">
         <div className="container-lg">
-          <div className="max-w-3xl">
-            <span className="tag mb-4">Free Resource</span>
+          <div className="max-w-2xl">
+            <span className="tag mb-4">Free Download</span>
             <h1 className="text-5xl font-bold text-dark mt-4 mb-6 leading-tight">
-              Florida Retail Activation{" "}
+              The Florida Retail Activation{" "}
               <span className="text-green">Checklist</span>
             </h1>
-            <p className="text-xl font-body text-gray-600 leading-relaxed mb-8 max-w-2xl">
-              A step-by-step execution guide for beverage brand activations in Florida retail accounts.
-              Built from real field experience. Used by Greenline ambassadors every week.
+            <p className="text-xl font-body text-gray-600 leading-relaxed">
+              28 field-tested steps across every phase of a retail demo — from pre-event setup to
+              post-activation reporting. Built from real activations. Used by Greenline ambassadors every week.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/schedule-an-intro-call" className="btn-primary">
-                Get a Managed Program
-              </Link>
-              <Link href="/retail-activation-roi-calculator" className="btn-secondary">
-                Calculate Your ROI
-              </Link>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Checklist */}
+      {/* Main: teaser + form */}
       <section className="section">
         <div className="container-lg">
-          <div className="text-center mb-14">
-            <span className="tag mb-4">Step-by-Step</span>
-            <h2 className="text-4xl font-bold text-dark mt-3">
-              Every Phase, <span className="text-green">Every Detail</span>
-            </h2>
-            <p className="text-gray-600 mt-4 font-body max-w-lg mx-auto">
-              Miss one step and the activation suffers. Use this checklist to run clean, professional, high-converting demos.
-            </p>
-          </div>
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
 
-          <div className="space-y-8">
-            {checklistSections.map((section) => (
-              <div key={section.phase} className={`rounded-2xl border-l-4 ${section.color} p-8`}>
-                <h3 className="font-sans font-bold text-xl text-dark mb-5">{section.phase}</h3>
-                <ul className="space-y-3">
-                  {section.items.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded border-2 border-gray-300 flex-shrink-0 mt-0.5" />
-                      <span className="font-body text-dark text-sm">{item}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* Left: what's inside */}
+            <div>
+              <h2 className="text-2xl font-bold text-dark mb-6">What&apos;s Inside</h2>
+              <div className="space-y-4 mb-10">
+                {phases.map((p) => (
+                  <div key={p.phase} className={`rounded-xl border-l-4 ${p.color} bg-white shadow-sm border border-gray-100 p-5`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-sans font-bold text-dark text-sm">{p.phase}</h3>
+                      <span className="text-xs font-body text-gray-400">{p.count} steps</span>
+                    </div>
+                    <p className="font-body text-gray-500 text-sm leading-relaxed">{p.preview}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              <div className="space-y-3">
+                {[
+                  "Built from 100+ Florida retail activations",
+                  "Covers compliance for hemp & functional beverages",
+                  "Used by Greenline ambassadors in the field every week",
+                  "Printable + shareable PDF format",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green flex items-center justify-center flex-shrink-0">
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="font-body text-dark text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: HubSpot form */}
+            <div className="card p-0 overflow-hidden">
+              <div className="bg-green p-6 text-white text-center">
+                <h3 className="font-sans font-bold text-xl">Get the Free Checklist</h3>
+                <p className="font-body text-green-100 text-sm mt-1">Delivered instantly to your inbox</p>
+              </div>
+              <div className="p-6">
+                <div id="hubspot-checklist-form" />
+                <Script
+                  src="//js.hsforms.net/forms/embed/v2.js"
+                  strategy="afterInteractive"
+                  onLoad={() => {
+                    // @ts-expect-error hbspt is loaded by the HubSpot script
+                    if (window.hbspt) {
+                      // @ts-expect-error hbspt is loaded by the HubSpot script
+                      window.hbspt.forms.create({
+                        region: "na1",
+                        portalId: "YOUR_PORTAL_ID",
+                        formId: "YOUR_FORM_ID",
+                        target: "#hubspot-checklist-form",
+                      });
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Pro tips */}
+      {/* Trust strip */}
       <section className="section bg-gray-50">
-        <div className="container-lg">
-          <div className="text-center mb-10">
-            <span className="tag mb-4">Pro Tips</span>
-            <h2 className="text-4xl font-bold text-dark mt-3">
-              What Separates <span className="text-green">Good from Great</span>
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                tip: "Never sit behind the table.",
-                detail: "Standing activates more conversations. Ambassadors who sit convert at half the rate of those who stand and engage.",
-              },
-              {
-                tip: "Lead with a question, not a sample.",
-                detail: "\"Have you tried [brand] before?\" opens a conversation. Just holding out a cup starts a transaction.",
-              },
-              {
-                tip: "Talk to the buyer, not just customers.",
-                detail: "Every activation is also a sales call. Use the time to build the account relationship and plant the reorder seed.",
-              },
-            ].map((t) => (
-              <div key={t.tip} className="card">
-                <div className="text-green font-sans font-bold text-lg mb-2">{t.tip}</div>
-                <p className="font-body text-gray-600 text-sm leading-relaxed">{t.detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="section bg-dark text-white text-center">
-        <div className="container-lg max-w-2xl">
-          <h2 className="text-4xl font-bold mb-4">Want Us to Run Your Activations?</h2>
-          <p className="text-gray-300 font-body mb-8 text-lg">
-            We handle every line item on this checklist — recruitment, training, execution, and reporting.
-            You just review the recap.
+        <div className="container-lg text-center max-w-2xl">
+          <p className="font-body text-gray-500 text-sm leading-relaxed">
+            This checklist is used by every Greenline ambassador before, during, and after each activation.
+            If you&apos;d rather have a trained team handle all 28 steps for you —
           </p>
-          <Link href="/schedule-an-intro-call" className="btn-coral">
+          <Link href="/schedule-an-intro-call" className="btn-primary mt-6 inline-block">
             Talk to the Team
           </Link>
         </div>
