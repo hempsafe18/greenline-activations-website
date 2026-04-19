@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 import Link from "next/link";
+import Image from "next/image";
 
 const phases = [
   {
@@ -36,16 +37,27 @@ export default function FloridaRetailActivationChecklistPage() {
       {/* Hero */}
       <section className="section bg-cream">
         <div className="container-lg">
-          <div className="max-w-2xl">
-            <span className="tag mb-4">Free Download</span>
-            <h1 className="text-5xl font-bold text-dark mt-4 mb-6 leading-tight">
-              The Florida Retail Activation{" "}
-              <span className="text-green">Checklist</span>
-            </h1>
-            <p className="text-xl font-body text-gray-600 leading-relaxed">
-              28 field-tested steps across every phase of a retail demo — from pre-event setup to
-              post-activation reporting. Built from real activations. Used by Greenline ambassadors every week.
-            </p>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="tag mb-4">Free Download</span>
+              <h1 className="text-5xl font-bold text-dark mt-4 mb-6 leading-tight">
+                The Florida Retail Activation{" "}
+                <span className="text-green">Checklist</span>
+              </h1>
+              <p className="text-xl font-body text-gray-600 leading-relaxed">
+                28 field-tested steps across every phase of a retail demo — from pre-event setup to
+                post-activation reporting. Built from real activations. Used by Greenline ambassadors every week.
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Image
+                src="/images/greenline-checklist-mockup.png"
+                alt="Florida Retail Activation Checklist preview"
+                width={480}
+                height={620}
+                className="w-full max-w-sm drop-shadow-xl rounded-xl"
+              />
+            </div>
           </div>
         </div>
       </section>
