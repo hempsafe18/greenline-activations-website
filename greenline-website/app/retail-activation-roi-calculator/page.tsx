@@ -81,12 +81,12 @@ export default function ROICalculatorPage() {
   const comparisonRows: [string, string, string, string, string][] = [
     ["Price per activation", "$180–$200", "$150–180", "$100–150", "$300+ (loaded)"],
     ["HempSafe certified rep", "✓", "✗", "✗", "Varies"],
-    ["Geo-tracked check-in", "✓", "✗", "✗", "✗"],
+    ["Geo-tracked check-in", "✓", "✓", "✗", "✗"],
     ["25-point post-visit report", "✓", "✗", "✗", "✗"],
     ["Weekly performance reporting", "✓", "✗", "✗", "Varies"],
     ["Ambassador Rewards Program", "✓", "✗", "✗", "✗"],
     ["Named clients", "3CHI, Señorita", "None listed", "None", "N/A"],
-    ["Consumer data captured", "✓", "✗", "✗", "Varies"],
+    ["Consumer data captured", "✓", "✓", "✗", "Varies"],
     ["Accountability infrastructure", "Full", "Minimal", "None", "Partial"],
   ];
 
@@ -283,7 +283,8 @@ export default function ROICalculatorPage() {
             <div className="mt-6 p-4 bg-gray-50 rounded-xl text-sm font-body text-gray-600 leading-relaxed">
               <strong className="text-dark">The real cost of a cheaper rep:</strong> An untrained temp at $150/activation
               who can&apos;t answer dosage questions, skips check-in, and submits no post-visit data costs you more in
-              lost conversions than the $75 you saved. At 80% sample-to-purchase, the rep is the product.
+              lost conversions than the $75 you saved. At 80% sample-to-purchase*, the rep is the product.
+              <br /><span className="text-xs text-gray-400 mt-2 block">* Across 3CHI test pilot</span>
             </div>
           </div>
 
