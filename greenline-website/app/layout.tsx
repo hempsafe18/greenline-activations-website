@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -27,6 +28,11 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer />
+        <Script
+          id="hs-script-loader"
+          src="//js.hs-scripts.com/47886643.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
