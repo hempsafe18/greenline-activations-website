@@ -107,7 +107,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
                 alt="Brand ambassador in-store activation"
                 width={400}
                 height={500}
-                className="object-cover w-full h-[280px]"
+                className="w-full h-auto"
               />
             </div>
             <div className="overflow-hidden rounded-xl">
@@ -116,7 +116,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
                 alt="Ambassador sampling product with customer"
                 width={400}
                 height={500}
-                className="object-cover w-full h-[280px]"
+                className="w-full h-auto"
               />
             </div>
             <div className="overflow-hidden rounded-xl">
@@ -125,7 +125,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
                 alt="Ambassador connecting with store customer"
                 width={400}
                 height={500}
-                className="object-cover w-full h-[280px]"
+                className="w-full h-auto"
               />
             </div>
             <div className="overflow-hidden rounded-xl">
@@ -134,7 +134,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
                 alt="Brand ambassador holding 3CHI cannabis seltzer"
                 width={400}
                 height={500}
-                className="object-cover w-full h-[280px]"
+                className="w-full h-auto"
               />
             </div>
           </div>
