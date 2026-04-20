@@ -1,5 +1,22 @@
 {
   "buildCommand": "cd greenline-website && npm install && npm run build",
   "outputDirectory": "greenline-website/out",
-  "installCommand": "echo 'install handled in buildCommand'"
+  "installCommand": "echo 'install handled in buildCommand'",
+  "redirects": [
+    {
+      "source": "/meetings/greenline-activations/intro-call-calendar",
+      "destination": "https://meetings.hubspot.com/greenline-activations/intro-call-calendar",
+      "permanent": false
+    },
+    {
+      "source": "/meetings/greenline-activations/ambassador-onboarding",
+      "destination": "https://meetings.hubspot.com/greenline-activations/ambassador-onboarding",
+      "permanent": false
+    },
+    {
+      "source": "/meetings/greenline-activations/greenline-activations-strategy-call",
+      "destination": "https://meetings.hubspot.com/greenline-activations/greenline-activations-strategy-call",
+      "permanent": false
+    }
+  ]
 }

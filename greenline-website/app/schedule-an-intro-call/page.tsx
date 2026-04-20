@@ -99,7 +99,7 @@ export default function ScheduleIntroCallPage() {
               </div>
               <div
                 className="meetings-iframe-container"
-                data-src="https://greenlineactivations.com/meetings/greenline-activations/intro-call-calendar?embed=true"
+                data-src="https://meetings.hubspot.com/greenline-activations/intro-call-calendar?embed=true"
               />
               <Script
                 src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"
