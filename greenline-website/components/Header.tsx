@@ -40,6 +40,14 @@ export default function Header() {
           <Link href="/brand-ambassador-application" className="font-sans text-dark hover:text-green transition-colors text-base">
             Join Our Team
           </Link>
+          <a
+            href="https://dashboard.greenlineactivations.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-sans text-sm font-semibold border border-gray-300 text-dark hover:border-green hover:text-green transition-colors px-4 py-2.5 rounded-lg"
+          >
+            Client Dashboard
+          </a>
           <Link href="/schedule-an-intro-call" className="btn-primary text-sm px-6 py-2.5">
             Schedule a Call
           </Link>
@@ -77,6 +85,15 @@ export default function Header() {
           >
             Join Our Team
           </Link>
+          <a
+            href="https://dashboard.greenlineactivations.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-sans text-dark hover:text-green text-base py-1"
+            onClick={() => setMenuOpen(false)}
+          >
+            Client Dashboard
+          </a>
           <Link
             href="/schedule-an-intro-call"
             className="btn-primary text-center text-sm mt-2"
