@@ -1,1 +1,6 @@
 greenline-website/tsconfig.tsbuildinfo
+greenline-website/.next/
+greenline-website/out/
+greenline-website/node_modules/
+greenline-website/next-env.d.ts
+greenline-website/package-lock.json
