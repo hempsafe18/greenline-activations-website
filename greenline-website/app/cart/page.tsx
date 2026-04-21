@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/components/CartContext";
 import { priceQuote, formatUSD } from "@/lib/pricing";
@@ -50,6 +50,17 @@ function CartPageInner() {
   const [brief, setBrief] = useState<EventBrief>(emptyBrief);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [serverReady, setServerReady] = useState(false);
+
+  // Warmup ping — Render free tier sleeps after inactivity; fire a cheap request
+  // on mount so the server is awake by the time the user clicks checkout.
+  useEffect(() => {
+    apiFetch<unknown>("/api/tiers")
+      .then(() => setServerReady(true))
+      .catch(() => {
+        // Ignore warmup failures — real error surfaces on checkout attempt.
+      });
+  }, []);
 
   const updateBrief = (k: keyof EventBrief, v: string) => {
     setBrief((b) => ({ ...b, [k]: v }));
@@ -103,8 +114,19 @@ function CartPageInner() {
       });
       window.location.href = res.url;
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      setError(msg);
+      const raw = e instanceof Error ? e.message : String(e);
+      // "Failed to fetch" means the browser couldn't reach the API at all —
+      // most likely a CORS preflight rejection or the Render instance is still
+      // waking up. Give the user an actionable message instead of the raw error.
+      const isNetworkError =
+        raw.toLowerCase().includes("failed to fetch") ||
+        raw.toLowerCase().includes("networkerror") ||
+        raw.toLowerCase().includes("load failed");
+      setError(
+        isNetworkError
+          ? "Could not reach the payment server. The server may be waking up — please wait 15 seconds and try again."
+          : raw
+      );
       setSubmitting(false);
     }
   };
@@ -444,12 +466,27 @@ function CartPageInner() {
                   className="btn-street w-full justify-center mt-6 text-base disabled:opacity-60 disabled:cursor-not-allowed"
                   data-testid="cart-checkout-button"
                 >
-                  {submitting ? "Redirecting to Stripe…" : "Checkout with Stripe →"}
+                  {submitting
+                    ? "Connecting to Stripe…"
+                    : !serverReady
+                    ? "Checkout with Stripe →"
+                    : "Checkout with Stripe →"}
                 </button>
-                {error && (
-                  <p className="mt-3 text-sm text-street font-display font-bold" data-testid="cart-error">
-                    {error}
+                {!serverReady && !submitting && (
+                  <p className="mt-2 text-[11px] text-ink/50">
+                    Waking up payment server…
                   </p>
+                )}
+                {error && (
+                  <div className="mt-3" data-testid="cart-error">
+                    <p className="text-sm text-street font-display font-bold">{error}</p>
+                    <button
+                      onClick={onCheckout}
+                      className="mt-2 text-xs underline underline-offset-2 text-ink/70 hover:text-ink"
+                    >
+                      Try again →
+                    </button>
+                  </div>
                 )}
                 <p className="mt-4 text-[11px] text-ink/60 leading-relaxed">
                   Secure checkout via Stripe. Prices shown are server-verified.
