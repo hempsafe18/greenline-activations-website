@@ -214,17 +214,20 @@ async def get_tiers():
 
 @api.post("/quote")
 async def quote(req: QuoteRequest):
-    """Server-side pricing calculation. Frontend shows a live preview but this is the source of truth."""
+    """Server-side pricing calculation. Frontend shows a live preview but this is the source of truth.
+    If a user-supplied tier_id doesn't match the correct tier for their qty, we auto-correct
+    (server is authoritative) and surface a 'retiered' flag so the UI can show a notice.
+    """
     line_items = []
     subtotal = 0.0
     for item in req.items:
-        tier = next((t for t in TIERS if t["id"] == item.tier_id), None)
-        if tier is None:
+        # Validate the tier_id at least corresponds to a known tier
+        if not any(t["id"] == item.tier_id for t in TIERS):
             raise HTTPException(status_code=400, detail=f"Unknown tier: {item.tier_id}")
-        # Auto-pick the correct tier for the qty (prevents tier_id/qty mismatch manipulation)
         q = price_quote(item.qty)
         if q is None:
             raise HTTPException(status_code=400, detail=f"Invalid quantity: {item.qty}")
+        retiered = q["tier_id"] != item.tier_id
         line_items.append(
             {
                 "tier_id": q["tier_id"],
@@ -233,6 +236,8 @@ async def quote(req: QuoteRequest):
                 "price_per": q["price_per"],
                 "subtotal": q["subtotal"],
                 "upsell": q["upsell"],
+                "retiered": retiered,
+                "requested_tier_id": item.tier_id if retiered else None,
             }
         )
         subtotal += q["subtotal"]
@@ -332,34 +337,52 @@ async def checkout_status(session_id: str, http_request: Request):
     host_url = str(http_request.base_url)
     webhook_url = f"{host_url.rstrip('/')}/api/webhook/stripe"
     stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
-    status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
 
-    # Update DB only if status has changed and not already processed
-    tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
-    if tx and tx.get("payment_status") != status.payment_status:
+    # Attempt to retrieve live from Stripe. If the Stripe proxy can't retrieve
+    # the session (common with the emergent test proxy), fall back to our DB state
+    # populated by the webhook. The DB is the source of truth.
+    try:
+        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
         now = datetime.now(timezone.utc).isoformat()
-        await db.payment_transactions.update_one(
-            {"session_id": session_id},
-            {"$set": {"payment_status": status.payment_status, "status": status.status, "updated_at": now}},
-        )
-        order_update = {
+        tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        if tx and tx.get("payment_status") != status.payment_status:
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {"payment_status": status.payment_status, "status": status.status, "updated_at": now}},
+            )
+            await db.orders.update_one(
+                {"stripe_session_id": session_id, "payment_status": {"$ne": "paid"}},
+                {"$set": {
+                    "payment_status": status.payment_status,
+                    "status": "paid" if status.payment_status == "paid" else status.status,
+                    "updated_at": now,
+                }},
+            )
+        return {
+            "session_id": session_id,
+            "status": status.status,
             "payment_status": status.payment_status,
-            "status": "paid" if status.payment_status == "paid" else status.status,
-            "updated_at": now,
+            "amount_total": status.amount_total,
+            "currency": status.currency,
+            "metadata": status.metadata,
+            "source": "stripe",
         }
-        await db.orders.update_one(
-            {"stripe_session_id": session_id, "payment_status": {"$ne": "paid"}},
-            {"$set": order_update},
-        )
-
-    return {
-        "session_id": session_id,
-        "status": status.status,
-        "payment_status": status.payment_status,
-        "amount_total": status.amount_total,
-        "currency": status.currency,
-        "metadata": status.metadata,
-    }
+    except Exception as e:
+        logger.warning("Stripe status fetch failed; falling back to DB: %s", e)
+        tx = await db.payment_transactions.find_one({"session_id": session_id}, {"_id": 0})
+        order = await db.orders.find_one({"stripe_session_id": session_id}, {"_id": 0})
+        if not tx and not order:
+            raise HTTPException(status_code=404, detail="Session not found")
+        amount = int(round(float((order or tx).get("subtotal", tx.get("amount", 0))) * 100))
+        return {
+            "session_id": session_id,
+            "status": (order or tx or {}).get("status", "open"),
+            "payment_status": (order or tx or {}).get("payment_status", "initiated"),
+            "amount_total": amount,
+            "currency": (order or tx or {}).get("currency", "usd"),
+            "metadata": (tx or {}).get("metadata", {}),
+            "source": "db",
+        }
 
 
 @api.post("/webhook/stripe")
@@ -430,8 +453,3 @@ async def onboarding_request(req: OnboardingRequest):
 
 
 app.include_router(api)
-
-
-@app.get("/")
-async def top():
-    return {"service": "Greenline Activations API", "status": "ok"}

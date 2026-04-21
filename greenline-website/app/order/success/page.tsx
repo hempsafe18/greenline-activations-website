@@ -62,8 +62,20 @@ function OrderSuccessInner() {
         setPolling(false);
         return;
       }
-      if (attempt >= 10) {
-        setError("Timed out checking payment status. Please refresh or email hello@greenlineactivations.com.");
+      if (attempt >= 15) {
+        // Final fallback — just show the order from DB.
+        if (orderId) {
+          try {
+            const o = await apiFetch<OrderResponse>(`/api/orders/${orderId}`);
+            setOrder(o);
+            if (o.payment_status === "paid") {
+              setPolling(false);
+              clear();
+              return;
+            }
+          } catch {}
+        }
+        setError("We haven't seen Stripe confirm the payment yet. If you completed checkout, your order is saved — check your email for confirmation, or visit /order/success later.");
         setPolling(false);
         return;
       }
@@ -86,6 +98,18 @@ function OrderSuccessInner() {
           setError("Checkout session expired.");
           return;
         }
+        // Also load the order shell early so we can display receipt info while polling
+        if (orderId && !order) {
+          try {
+            const o = await apiFetch<OrderResponse>(`/api/orders/${orderId}`);
+            setOrder(o);
+            if (o.payment_status === "paid") {
+              setPolling(false);
+              clear();
+              return;
+            }
+          } catch {}
+        }
         setTimeout(() => pollStatus(attempt + 1), 2000);
       } catch (e: unknown) {
         setTimeout(() => pollStatus(attempt + 1), 2000);
@@ -93,7 +117,7 @@ function OrderSuccessInner() {
         console.error(msg);
       }
     },
-    [sessionId, orderId, clear]
+    [sessionId, orderId, clear, order]
   );
 
   useEffect(() => {

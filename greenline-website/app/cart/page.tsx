@@ -270,7 +270,7 @@ function CartPageInner() {
                       className="input-brutal"
                       value={brief.brand_name}
                       onChange={(e) => updateBrief("brand_name", e.target.value)}
-                      data-testid="brief-brand"
+                      data-testid="brief-brand-name"
                     />
                   </div>
                   <div>
@@ -394,7 +394,7 @@ function CartPageInner() {
                       className="input-brutal"
                       value={brief.brand_name}
                       onChange={(e) => updateBrief("brand_name", e.target.value)}
-                      data-testid="brief-brand-skip"
+                      data-testid="brief-brand-name-skip"
                     />
                   </div>
                   <div>

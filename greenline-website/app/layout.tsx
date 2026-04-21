@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { CartProvider } from "@/components/CartContext";
 import CartDrawer from "@/components/CartDrawer";
+import HubSpotLoader from "@/components/HubSpotLoader";
 
 export const metadata: Metadata = {
   title: {
@@ -33,11 +33,7 @@ export default function RootLayout({
           <Footer />
           <CartDrawer />
         </CartProvider>
-        <Script
-          id="hs-script-loader"
-          src="//js.hs-scripts.com/47886643.js"
-          strategy="afterInteractive"
-        />
+        <HubSpotLoader />
       </body>
     </html>
   );
