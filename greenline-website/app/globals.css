@@ -1,41 +1,162 @@
-@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+/* Fonts: Cabinet Grotesk (display) via Fontshare + Manrope (body) via Google */
+@import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800,900,500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --font-display: "Cabinet Grotesk", "Manrope", system-ui, sans-serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+}
 
 @layer base {
   html {
     scroll-behavior: smooth;
   }
   body {
-    @apply font-body text-dark bg-white;
+    font-family: var(--font-sans);
+    background: #faf0ea;
+    color: #0a0a0a;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-sans;
+  ::selection {
+    background: #ff4f33;
+    color: #faf0ea;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 }
 
 @layer components {
+  /* Neubrutalist button */
   .btn-primary {
-    @apply inline-block bg-green text-white font-sans font-semibold px-8 py-3 rounded-lg hover:bg-green-dark transition-colors duration-200;
+    @apply inline-flex items-center gap-2 bg-ink text-bone font-display font-bold px-7 py-3.5 border-2 border-ink shadow-brutal hover:shadow-brutal-lg hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-150 uppercase tracking-tight;
+  }
+  .btn-canopy {
+    @apply inline-flex items-center gap-2 bg-canopy text-ink font-display font-bold px-7 py-3.5 border-2 border-ink shadow-brutal hover:shadow-brutal-lg hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-150 uppercase tracking-tight;
+  }
+  .btn-street {
+    @apply inline-flex items-center gap-2 bg-street text-bone font-display font-bold px-7 py-3.5 border-2 border-ink shadow-brutal hover:shadow-brutal-lg hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-150 uppercase tracking-tight;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 bg-transparent text-ink font-display font-bold px-6 py-3 border-2 border-ink hover:bg-ink hover:text-bone transition-colors duration-150 uppercase tracking-tight;
   }
   .btn-secondary {
-    @apply inline-block border-2 border-green text-green font-sans font-semibold px-8 py-3 rounded-lg hover:bg-green hover:text-white transition-colors duration-200;
+    @apply inline-flex items-center gap-2 bg-bone text-ink font-display font-bold px-7 py-3.5 border-2 border-ink shadow-brutal hover:shadow-brutal-lg hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-150 uppercase tracking-tight;
   }
   .btn-coral {
-    @apply inline-block bg-coral text-white font-sans font-semibold px-8 py-3 rounded-lg hover:bg-coral-dark transition-colors duration-200;
+    @apply inline-flex items-center gap-2 bg-street text-bone font-display font-bold px-7 py-3.5 border-2 border-ink shadow-brutal hover:shadow-brutal-lg hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-150 uppercase tracking-tight;
   }
+
   .section {
     @apply py-20 px-4;
   }
   .container-lg {
     @apply max-w-6xl mx-auto;
   }
+  .container-xl {
+    @apply max-w-7xl mx-auto;
+  }
   .card {
-    @apply bg-white rounded-2xl p-8 shadow-sm border border-gray-100;
+    @apply bg-white border-2 border-ink p-8 shadow-brutal transition-all duration-150;
+  }
+  .card-hover {
+    @apply hover:shadow-brutal-lg hover:-translate-x-[3px] hover:-translate-y-[3px];
   }
   .tag {
-    @apply inline-block text-sm font-sans font-semibold text-green bg-green-50 px-3 py-1 rounded-full uppercase tracking-wide;
+    @apply inline-block text-[11px] font-display font-bold text-ink bg-canopy border-2 border-ink px-3 py-1 uppercase tracking-[0.18em];
+  }
+  .tag-street {
+    @apply inline-block text-[11px] font-display font-bold text-bone bg-street border-2 border-ink px-3 py-1 uppercase tracking-[0.18em];
+  }
+  .tag-ink {
+    @apply inline-block text-[11px] font-display font-bold text-bone bg-ink border-2 border-ink px-3 py-1 uppercase tracking-[0.18em];
+  }
+  .eyebrow {
+    @apply text-[11px] font-display font-bold uppercase tracking-[0.24em] text-ink/60;
+  }
+  .input-brutal {
+    @apply w-full bg-white border-2 border-ink px-4 py-3 text-ink font-sans placeholder:text-ink/40 focus:outline-none focus:shadow-brutal focus:-translate-x-[2px] focus:-translate-y-[2px] transition-all;
+  }
+  .label-brutal {
+    @apply block text-[11px] font-display font-bold uppercase tracking-[0.18em] text-ink mb-2;
+  }
+
+  /* Receipt / ticket divider: scalloped bottom edge using radial gradient */
+  .receipt-edge {
+    --r: 8px;
+    mask: radial-gradient(var(--r) at var(--r) 100%, #0000 98%, #000) 0 100% /
+        calc(var(--r) * 2) var(--r) repeat-x,
+      linear-gradient(#000 0 0) top/100% calc(100% - var(--r)) no-repeat;
+  }
+
+  /* Grain overlay */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.06;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+}
+
+/* Range slider — thick track, big square thumb */
+input[type="range"].slider-brutal {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 14px;
+  background: #0a0a0a;
+  border: 2px solid #0a0a0a;
+  cursor: pointer;
+}
+input[type="range"].slider-brutal::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  background: #ff4f33;
+  border: 3px solid #0a0a0a;
+  box-shadow: 3px 3px 0px 0px #0a0a0a;
+  cursor: grab;
+  transition: transform 0.12s;
+}
+input[type="range"].slider-brutal::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.08);
+}
+input[type="range"].slider-brutal::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  background: #ff4f33;
+  border: 3px solid #0a0a0a;
+  box-shadow: 3px 3px 0px 0px #0a0a0a;
+  cursor: grab;
+}
+
+/* Marquee */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+}
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }

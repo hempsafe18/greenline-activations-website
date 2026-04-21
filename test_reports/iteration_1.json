@@ -1,0 +1,61 @@
+{
+  "summary": "Completed e2e backend + frontend testing of Greenline Activations commerce flow. Backend: 15/17 pytest tests passed; critical bug on /api/checkout/status (Stripe 'No such checkout.session'). Frontend: SprintBuilder, /sprints, /cart and Stripe checkout redirect all work end-to-end.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "GET /api/checkout/status/{session_id}",
+        "issue": "Returns 500 'CheckoutError: Failed to retrieve session status: No such checkout.session: cs_test_...'. Creating a Stripe session and immediately (or after 5s) querying status fails. This breaks the /order/success polling flow. Both create and status endpoints use the same StripeCheckout(api_key=STRIPE_API_KEY) in server.py, but the session created via create_checkout_session is not retrievable via get_checkout_status. Possible cause: emergentintegrations stripe adapter creating session on a different Stripe account context than the one used at lookup time, or a regression in the adapter.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "GET /",
+        "issue": "Preview URL ingress routes GET / to the Next.js frontend (HTML), not the FastAPI top-level root. The backend defines @app.get('/') banner but it's only reachable internally (port 8001). The review spec item 'GET / and GET /api/ both return the service banner' cannot be satisfied externally — /api/ correctly returns JSON banner; / returns the site HTML. Recommend removing @app.get('/') or documenting that only /api/* is exposed."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/cart",
+        "issues": [
+          "Brief form testid is 'brief-brand' but the review request referred to 'brief-brand-name'. Inconsistent with the other brief-contact-name/contact-email testids. Suggest renaming to 'brief-brand-name' for consistency across the codebase.",
+          "'THC Retail Activation Checklist' lead-gen popup overlay appears on the cart page and partially obscures the CHECKOUT WITH STRIPE CTA; consider delaying it or suppressing it on /cart and /order/success."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_greenline_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "FIX CRITICAL: /api/checkout/status returning 500 for the session that was just created. Investigate emergentintegrations StripeCheckout.get_checkout_status — the session_id round-trip is broken. This breaks the post-payment success page polling. Reproduction: POST /api/checkout/session → take session_id → GET /api/checkout/status/{session_id} → 500. Error: 'stripe._error.InvalidRequestError: No such checkout.session'. Please use web_search_tool if needed to debug (not for emergent llm key itself).",
+    "Decide on / root handler: either remove @app.get('/') in server.py or document that the preview ingress only exposes /api/* externally.",
+    "Rename cart brief input testid from 'brief-brand' to 'brief-brand-name' for consistency with 'brief-contact-name', 'brief-contact-email'.",
+    "Suppress the 'THC Retail Activation Checklist' lead-gen popup on /cart and /order/success pages (currently overlaps the Stripe checkout CTA)."
+  ],
+  "critical_code_review_comments": [
+    "server.py line 140: uses price_quote to auto-pick tier for a given qty; this silently ignores the user-sent tier_id (e.g., user sends tier_id=test_sprint with qty=75 but server recomputes to sprint_3). This is safe behavior but should probably return the recomputed tier explicitly in the 'upsell' response when the user's chosen tier didn't match qty, so the frontend can display a 'we adjusted your tier' message.",
+    "server.py checkout_status + stripe_webhook both instantiate a new StripeCheckout per request; consider caching the client.",
+    "server.py stores event_brief (PII: emails, phone, locations) in MongoDB without any encryption or retention policy note.",
+    "server.py webhook signature check relies on emergentintegrations handle_webhook; no request-source IP allowlisting.",
+    "No DB index on order_id / stripe_session_id in MongoDB — will slow GET /api/orders/{order_id} and webhook lookups at scale."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_greenline_backend.py (new)"
+  ],
+  "success_rate": {
+    "backend": "88% (15/17 pytest)",
+    "frontend": "100% of commerce flows tested (SprintBuilder transitions, add-to-cart, /sprints, /cart, skip toggle, Stripe checkout POST + redirect, header cart badge)"
+  },
+  "test_credentials": "none required — Stripe test key sk_test_emergent is pre-configured in /app/backend/.env",
+  "seed_data_creation": "Created TEST_-prefixed orders + payment_transactions + onboarding_requests rows in greenline_activations MongoDB during checkout tests. Safe to leave or prune.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Critical open issue: /api/checkout/status/{session_id} → 500 'No such checkout.session'. All other APIs (tiers, quote with gap/sprint_1/2/3 pricing, checkout/session creation, orders get, onboarding request) pass. Frontend data-testid map: SprintBuilder uses sprint-builder-* ids; cart uses cart-skip-toggle, brief-brand (not brief-brand-name), brief-contact-name, brief-contact-email, cart-checkout-button. /cart has a checklist popup overlay that may intercept clicks on slower runs; use force=True. For Stripe redirect test, use page.route to abort 'https://checkout.stripe.com/**' to prevent the test browser from leaving the preview URL.",
+  "rca of the issue": "RCA for /api/checkout/status 500: backend/server.py line 334-335 calls StripeCheckout.get_checkout_status(session_id). Stripe API then returns 'No such checkout.session: cs_test_...' for the exact session id that create_checkout_session just returned. This indicates either (a) the emergentintegrations adapter's internal Stripe account context differs between create and retrieve, or (b) session_id is being URL-decoded / truncated somewhere in the adapter. Mitigation: confirm via the emergentintegrations library (do NOT web-search the emergent key — it's internal); if library bug, open an issue. Until fixed, the /order/success page polling will always show errors, and webhook-driven order updates will work but status probes will 500."
+}

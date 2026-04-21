@@ -3,14 +3,16 @@ import "./globals.css";
 import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { CartProvider } from "@/components/CartContext";
+import CartDrawer from "@/components/CartDrawer";
 
 export const metadata: Metadata = {
   title: {
-    default: "Greenline Activations | Florida Field Marketing for Beverage Brands",
-    template: "%s | Greenline Activations",
+    default: "Greenline Activations · Retail Activations. Add to Cart.",
+    template: "%s · Greenline Activations",
   },
   description:
-    "Greenline Activations is a brand activation agency for hemp and functional beverage brands. Field marketing, sampling, and retail execution across Florida.",
+    "Productized field marketing for hemp and functional beverage brands. Build your sprint, checkout with Stripe, and ship ambassadors to Florida retail — no proposals, no long-term contracts.",
   openGraph: {
     siteName: "Greenline Activations",
     type: "website",
@@ -24,10 +26,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+      <body className="bg-bone text-ink">
+        <CartProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <CartDrawer />
+        </CartProvider>
         <Script
           id="hs-script-loader"
           src="//js.hs-scripts.com/47886643.js"

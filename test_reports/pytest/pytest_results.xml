@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="17" time="2.420" timestamp="2026-04-21T09:17:43.500775+00:00" hostname="agent-env-ff6a1df0-4c2f-4643-a00b-791d47270247"><testcase classname="backend.tests.test_greenline_backend.TestBanner" name="test_root" time="0.351"><failure message="requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)">/root/.venv/lib/python3.11/site-packages/requests/models.py:978: in json
+    return complexjson.loads(self.text, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/json/decoder.py:355: in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+E   json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+backend/tests/test_greenline_backend.py:21: in test_root
+    assert r.json().get("service") == "Greenline Activations API"
+           ^^^^^^^^
+/root/.venv/lib/python3.11/site-packages/requests/models.py:982: in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+E   requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)</failure></testcase><testcase classname="backend.tests.test_greenline_backend.TestBanner" name="test_api_root" time="0.044" /><testcase classname="backend.tests.test_greenline_backend.TestBanner" name="test_tiers" time="0.042" /><testcase classname="backend.tests.test_greenline_backend.TestQuote" name="test_quote_sprint_1_qty_20" time="0.042" /><testcase classname="backend.tests.test_greenline_backend.TestQuote" name="test_quote_gap_qty_8" time="0.043" /><testcase classname="backend.tests.test_greenline_backend.TestQuote" name="test_quote_sprint_2_qty_35" time="0.044" /><testcase classname="backend.tests.test_greenline_backend.TestQuote" name="test_quote_sprint_3_qty_75" time="0.048" /><testcase classname="backend.tests.test_greenline_backend.TestQuote" name="test_quote_invalid_tier" time="0.041" /><testcase classname="backend.tests.test_greenline_backend.TestQuote" name="test_quote_server_recomputes_tier" time="0.041" /><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_create_checkout_with_brief" time="0.717" /><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_invalid_tier_rejected" time="0.047" /><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_checkout_skip_details_empty_brief" time="0.390" /><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_empty_cart_rejected" time="0.042" /><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_checkout_status" time="0.239"><failure message="AssertionError: Internal Server Error&#10;assert 500 == 200&#10; +  where 500 = &lt;Response [500]&gt;.status_code">backend/tests/test_greenline_backend.py:154: in test_checkout_status
+    assert r.status_code == 200, r.text
+E   AssertionError: Internal Server Error
+E   assert 500 == 200
+E    +  where 500 = &lt;Response [500]&gt;.status_code</failure></testcase><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_get_order" time="0.043" /><testcase classname="backend.tests.test_greenline_backend.TestCheckout" name="test_get_order_not_found" time="0.040" /><testcase classname="backend.tests.test_greenline_backend.TestOnboarding" name="test_onboarding_request" time="0.075" /></testsuite></testsuites>
