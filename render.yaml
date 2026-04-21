@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: greenline-api
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: pip install --extra-index-url https://d33sy5i8bnduwe.cloudfront.net/simple/ -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/
+    envVars:
+      # Set this to your MongoDB Atlas connection string (mongodb+srv://...)
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: greenline_activations
+      # Your Stripe live / test secret key (sk_live_... or sk_test_...).
+      # DO NOT use sk_test_emergent in production.
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: APP_URL
+        value: https://greenlineactivations.com
+      - key: ALLOWED_ORIGINS
+        value: https://greenlineactivations.com,https://www.greenlineactivations.com
+      # Python version Render should use
+      - key: PYTHON_VERSION
+        value: "3.11.9"

@@ -36,9 +36,16 @@ db = mongo_client[DB_NAME]
 app = FastAPI(title="Greenline Activations API")
 api = APIRouter(prefix="/api")
 
+# CORS: allow the production domain(s) + any origin when ALLOWED_ORIGINS is unset (dev).
+_raw_origins = os.environ.get("ALLOWED_ORIGINS", "").strip()
+if _raw_origins:
+    allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+else:
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
