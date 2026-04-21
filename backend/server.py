@@ -2,11 +2,15 @@
 Greenline Activations — SaaS backend.
 Handles cart pricing validation, order creation, Stripe checkout, and order lookup.
 """
+import asyncio
 import os
 import uuid
 import logging
 from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
+
+import stripe as stripe_lib
+import resend as resend_lib
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, APIRouter, HTTPException, Request
@@ -29,9 +33,19 @@ logging.basicConfig(level=logging.INFO)
 MONGO_URL = os.environ["MONGO_URL"]
 DB_NAME = os.environ["DB_NAME"]
 STRIPE_API_KEY = os.environ["STRIPE_API_KEY"]
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "orders@greenlineactivations.com")
 
 mongo_client = AsyncIOMotorClient(MONGO_URL)
 db = mongo_client[DB_NAME]
+
+if not STRIPE_WEBHOOK_SECRET:
+    logger.warning("STRIPE_WEBHOOK_SECRET not set — webhook signature validation is DISABLED")
+if RESEND_API_KEY:
+    resend_lib.api_key = RESEND_API_KEY
+else:
+    logger.warning("RESEND_API_KEY not set — order confirmation emails will not be sent")
 
 app = FastAPI(title="Greenline Activations API")
 api = APIRouter(prefix="/api")
@@ -392,10 +406,115 @@ async def checkout_status(session_id: str, http_request: Request):
         }
 
 
+async def send_order_confirmation(order: dict) -> None:
+    if not RESEND_API_KEY:
+        return
+    brief = order.get("event_brief") or {}
+    contact_email = brief.get("contact_email") or ""
+    if not contact_email:
+        logger.info("No contact email on order %s — skipping confirmation", order.get("order_id"))
+        return
+
+    contact_name = brief.get("contact_name") or "there"
+    brand_name = brief.get("brand_name") or "Your Sprint"
+    order_id = order.get("order_id", "")
+    short_id = order_id[:8].upper()
+    line_items = order.get("line_items", [])
+    subtotal = order.get("subtotal", 0)
+
+    rows = "".join(
+        f"<tr>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #E5D9D2;font-size:14px;color:#0A0A0A'>{li['tier_name']}</td>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #E5D9D2;text-align:center;font-size:14px;color:#0A0A0A'>{li['qty']}</td>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #E5D9D2;text-align:right;font-size:14px;color:#0A0A0A'>${li['price_per']:.2f}</td>"
+        f"<td style='padding:10px 14px;border-bottom:1px solid #E5D9D2;text-align:right;font-size:14px;color:#0A0A0A'>${li['subtotal']:,.2f}</td>"
+        f"</tr>"
+        for li in line_items
+    )
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#FAF0EA;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF0EA;padding:40px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;border:1px solid #E5D9D2;box-shadow:4px 4px 0 #0A0A0A;">
+        <tr>
+          <td style="background:#0A0A0A;padding:32px 40px;">
+            <p style="margin:0;color:#5BB011;font-size:12px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;">Greenline Activations</p>
+            <h1 style="margin:8px 0 0;color:#FAF0EA;font-size:26px;font-weight:800;letter-spacing:-0.02em;">Order Confirmed ✓</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:36px 40px;">
+            <p style="margin:0 0 6px;color:#0A0A0A;font-size:16px;">Hey {contact_name},</p>
+            <p style="margin:0 0 28px;color:#0A0A0A;font-size:15px;line-height:1.7;">
+              Your sprint is locked in. Our field ops team will be in touch within <strong>1 business day</strong> to kick things off.
+            </p>
+
+            <p style="margin:0 0 10px;color:#0A0A0A;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">Order #{short_id}</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #E5D9D2;border-collapse:collapse;">
+              <tr style="background:#FAF0EA;">
+                <th style="padding:8px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#0A0A0A;border-bottom:1px solid #E5D9D2;">Sprint</th>
+                <th style="padding:8px 14px;text-align:center;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#0A0A0A;border-bottom:1px solid #E5D9D2;">Activations</th>
+                <th style="padding:8px 14px;text-align:right;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#0A0A0A;border-bottom:1px solid #E5D9D2;">Each</th>
+                <th style="padding:8px 14px;text-align:right;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#0A0A0A;border-bottom:1px solid #E5D9D2;">Total</th>
+              </tr>
+              {rows}
+              <tr style="background:#FAF0EA;">
+                <td colspan="3" style="padding:12px 14px;text-align:right;font-size:13px;font-weight:700;color:#0A0A0A;">Total Paid</td>
+                <td style="padding:12px 14px;text-align:right;font-size:15px;font-weight:800;color:#5BB011;">${subtotal:,.2f}</td>
+              </tr>
+            </table>
+
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0 0;border-left:3px solid #5BB011;">
+              <tr><td style="padding:0 0 0 16px;">
+                <p style="margin:0 0 10px;color:#0A0A0A;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">What happens next</p>
+                <p style="margin:0 0 7px;color:#0A0A0A;font-size:14px;line-height:1.6;">1. We review your event brief and confirm ambassador availability.</p>
+                <p style="margin:0 0 7px;color:#0A0A0A;font-size:14px;line-height:1.6;">2. A kickoff call is scheduled to finalize dates, locations, and brand guidelines.</p>
+                <p style="margin:0;color:#0A0A0A;font-size:14px;line-height:1.6;">3. Activations go live on your preferred start date with real-time field reporting.</p>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#FAF0EA;padding:20px 40px;border-top:1px solid #E5D9D2;">
+            <p style="margin:0;color:#0A0A0A;font-size:13px;line-height:1.6;">Questions? <a href="mailto:hello@greenlineactivations.com" style="color:#5BB011;text-decoration:none;font-weight:600;">hello@greenlineactivations.com</a></p>
+            <p style="margin:6px 0 0;color:#888;font-size:11px;">Greenline Activations · Florida Retail Field Marketing</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+    params: resend_lib.Emails.SendParams = {
+        "from": f"Greenline Activations <{RESEND_FROM_EMAIL}>",
+        "to": [contact_email],
+        "subject": f"Order Confirmed — {brand_name} #{short_id}",
+        "html": html,
+    }
+    try:
+        await asyncio.to_thread(resend_lib.Emails.send, params)
+        logger.info("Confirmation email sent to %s (order %s)", contact_email, order_id)
+    except Exception:
+        logger.exception("Failed to send confirmation email for order %s", order_id)
+
+
 @api.post("/webhook/stripe")
 async def stripe_webhook(request: Request):
     body = await request.body()
     signature = request.headers.get("Stripe-Signature", "")
+
+    # Reject unsigned webhooks when a signing secret is configured.
+    if STRIPE_WEBHOOK_SECRET:
+        try:
+            stripe_lib.Webhook.construct_event(body, signature, STRIPE_WEBHOOK_SECRET)
+        except (stripe_lib.error.SignatureVerificationError, ValueError) as e:
+            logger.warning("Rejected webhook with invalid Stripe signature: %s", e)
+            raise HTTPException(status_code=400, detail="Invalid webhook signature")
+
     host_url = str(request.base_url)
     webhook_url = f"{host_url.rstrip('/')}/api/webhook/stripe"
     stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
@@ -421,6 +540,19 @@ async def stripe_webhook(request: Request):
                 }
             },
         )
+
+        if event.payment_status == "paid":
+            order = await db.orders.find_one(
+                {"stripe_session_id": event.session_id, "confirmation_email_sent": {"$ne": True}},
+                {"_id": 0},
+            )
+            if order:
+                await send_order_confirmation(order)
+                await db.orders.update_one(
+                    {"stripe_session_id": event.session_id},
+                    {"$set": {"confirmation_email_sent": True, "updated_at": now}},
+                )
+
     return {"received": True}
 
 

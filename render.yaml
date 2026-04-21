@@ -18,6 +18,16 @@ services:
       # DO NOT use sk_test_emergent in production.
       - key: STRIPE_API_KEY
         sync: false
+      # Stripe webhook signing secret (whsec_...) — get this from the Stripe dashboard
+      # after registering https://greenline-api.onrender.com/api/webhook/stripe
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      # Resend API key (re_...) for order confirmation emails
+      - key: RESEND_API_KEY
+        sync: false
+      # "From" address for order emails — must be a verified Resend sender domain
+      - key: RESEND_FROM_EMAIL
+        value: orders@greenlineactivations.com
       - key: APP_URL
         value: https://greenlineactivations.com
       - key: ALLOWED_ORIGINS
