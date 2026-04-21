@@ -51,15 +51,23 @@ app = FastAPI(title="Greenline Activations API")
 api = APIRouter(prefix="/api")
 
 # CORS: allow the production domain(s) + any origin when ALLOWED_ORIGINS is unset (dev).
+# Set ALLOWED_ORIGINS as a comma-separated list of exact origins on Render.
+# All Vercel preview URLs for this project are allowed via regex regardless.
 _raw_origins = os.environ.get("ALLOWED_ORIGINS", "").strip()
 if _raw_origins:
     allowed_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 else:
     allowed_origins = ["*"]
 
+# Matches greenline-activations-website-*.vercel.app and the production domain
+_vercel_preview_regex = (
+    r"https://greenline-activations-website(-git-[a-z0-9-]+-hempsafe18s-projects)?\.vercel\.app"
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    allow_origin_regex=_vercel_preview_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
