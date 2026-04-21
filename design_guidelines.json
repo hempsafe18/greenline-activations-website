@@ -1,0 +1,114 @@
+{
+  "theme_archetype": "Archetype 4: Swiss & High-Contrast with Street Marketing Energy",
+  "theme_mode": "light",
+  "brand_identity": {
+    "vibe": "Bold, productized SaaS meets gritty, high-energy street marketing.",
+    "core_emotion": "Action-oriented, rebellious but professional, transparent, energetic.",
+    "visual_cues": "Pill-shaped tier badges, sticker/label motifs, massive typography, raw grids, ticker/marquee animations."
+  },
+  "color_palette": {
+    "background": "#FAF0EA",
+    "foreground": "#0A0A0A",
+    "primary": "#0A0A0A",
+    "primary_foreground": "#FAF0EA",
+    "surface": "#FFFFFF",
+    "surface_dark": "#1A1A1A",
+    "accent_green": "#5BB011",
+    "accent_coral": "#FF4F33",
+    "border": "#E5D9D2",
+    "border_dark": "#2E2E2E"
+  },
+  "typography": {
+    "heading_font": "Cabinet Grotesk",
+    "body_font": "Manrope",
+    "rules": {
+      "h1": "text-5xl sm:text-6xl+ font-black tracking-tighter uppercase leading-none",
+      "h2": "text-4xl sm:text-5xl font-extrabold tracking-tight uppercase",
+      "h3": "text-2xl sm:text-3xl font-bold tracking-tight",
+      "body": "text-base leading-relaxed text-gray-800",
+      "labels": "text-xs font-bold uppercase tracking-[0.2em] text-gray-500"
+    }
+  },
+  "spacing_and_layout": {
+    "strategy": "Maximalist, asymmetrical, bento grids. Deep padding for containers.",
+    "padding_scale": "p-6 to p-12 inside containers to prevent text collision.",
+    "grid_system": "Mode A: The 'Tetris' Grid for Marketing sections. Offset alignment, negative space.",
+    "borders": "Expose the skeleton. 1px solid dark borders on bright surfaces to mimic printed stickers or receipts."
+  },
+  "surface_styles": {
+    "header": "Crystal Glass: backdrop-blur-xl bg-white/70 with a 1px solid border-b border-[#0A0A0A]/10.",
+    "cards": "Neubrutalist/Tactile: Flat white background, sharp 1px solid border (#0A0A0A), hard drop shadow (e.g. shadow-[4px_4px_0px_#0A0A0A]). No soft blurs.",
+    "badges": "Pill-shaped, high-contrast. E.g., bg-[#5BB011] text-white or bg-[#FF4F33] text-white.",
+    "footer": "Massive dark block (bg-[#0A0A0A]) with vibrant accent typography."
+  },
+  "motion_and_interactions": {
+    "hover_states": "Cards lift sharply (-translate-y-1, -translate-x-1) and shadow increases to 8px_8px. Buttons invert colors.",
+    "marquee": "Continuous ticker showing live activations or 'ADD TO CART • RETAIL ACTIVATION •'. bg-[#FF4F33] text-white, uppercase.",
+    "slider_feedback": "Haptic/Visual snap. As user drags the quantity slider, numbers tick up rapidly, and tier badge flashes when a new pricing bracket is reached.",
+    "cart_add": "Scale bounce on cart icon, slight screen flash or toast notification sliding in from bottom right with neubrutalist borders."
+  },
+  "components_strategy": {
+    "forms": "Shadcn based. Use heavy, high-contrast inputs (border-2 focus:border-[#0A0A0A] focus:ring-0).",
+    "buttons": "Square or very slightly rounded (rounded-sm). Massive padding. 'Retail Price Tag' motif (maybe a punched hole graphic using CSS or simple stark contrast).",
+    "sliders": "Custom or Shadcn slider heavily styled. Thick track, large square or pill thumb to match the 'bold' aesthetic."
+  },
+  "page_blueprints": {
+    "homepage_hero": {
+      "layout": "2-column or split asymmetric. Left: Massive 'BUILD YOUR SPRINT' typography, marquee ribbon. Right: Interactive Card.",
+      "interactive_element": "Quantity Slider. Range 1-100+. Real-time price calculation: Test Sprint (1-6) $200, Sprint 1 (12-29) $190, Sprint 2 (30-59) $180, Sprint 3 (60+) $165. Updates 'Total' and 'Tier Name' instantly.",
+      "cta": "Massive 'ADD SPRINT TO CART' button."
+    },
+    "sprints_page": {
+      "layout": "Grid of 4 SKU Cards (Test, Sprint 1, 2, 3) behaving like e-commerce product listings.",
+      "card_design": "Sticker motif. Prominent quantity slider inside the card itself or globally above them that highlights the active SKU card based on quantity selected.",
+      "details": "Include 'per-activation' crossed-out price logic to show volume discounts."
+    },
+    "cart_drawer": {
+      "layout": "Right-side slide-in (Shadcn Sheet).",
+      "content": "Line items (Tier, Qty, Subtotal). Heavy bottom border for the 'Total' line. Checkout CTA."
+    },
+    "cart_page": {
+      "layout": "Two-pane. Left: Complex Event Details Form (dates, locations, brand name, SKUs, staffing notes). Right: Order Summary.",
+      "skip_feature": "Prominent toggle/banner at the top: 'Skip the details — schedule an onboarding call instead'. Replaces the heavy form with a simple calendar/booking embed and basic contact info."
+    },
+    "order_success": {
+      "layout": "Centered, high-impact. 'SPRINT SECURED'.",
+      "content": "Receipt-style order lookup card, next steps timeline (1. Onboarding, 2. Staffing, 3. Activation)."
+    },
+    "header": {
+      "layout": "Sticky, glassmorphic.",
+      "left": "Bold 'GREENLINE' logo.",
+      "right": "'Pricing' link, 'Book Call' secondary ghost button, Cart Icon with red/coral dot notification."
+    }
+  },
+  "testing_attributes": {
+    "rules": "All interactive elements MUST include `data-testid` (e.g., `data-testid=\"cart-checkout-button\"`)."
+  },
+  "image_urls": [
+    {
+      "url": "https://images.pexels.com/photos/34247674/pexels-photo-34247674.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Bustling outdoor market/street vendor scene. Use for 'Retail Activation' ambient background or hero imagery.",
+      "category": "hero_background"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1696739696228-eee49592ff07?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODR8MHwxfHNlYXJjaHwxfHxiZXZlcmFnZSUyMGNhbiUyMGJyYW5kfGVufDB8fHx8MTc3Njc2MjExOXww&ixlib=rb-4.1.0&q=85",
+      "description": "Three clean beverage cans. Use for product/SKU visual representations or SaaS tier placeholders.",
+      "category": "product_mockups"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1719427129712-6dd7b5f101f8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwc3RvcmUlMjBzYW1wbGluZ3xlbnwwfHx8fDE3NzY3NjIxMDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Vibrant grocery store display. Use to ground the agency in physical retail spaces.",
+      "category": "retail_context"
+    },
+    {
+      "url": "https://images.pexels.com/photos/22699696/pexels-photo-22699696.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Lively street vendor scene with diverse people. Perfect for 'street marketing energy' sections.",
+      "category": "street_marketing"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1760530627550-fbb75c769bd4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxiZXZlcmFnZSUyMHRhc3RpbmclMjBldmVudHxlbnwwfHx8fDE3NzY3NjIxMDF8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Pouring amber liquid at a tasting event. Good for 'ambient/brand' sections showcasing beverage focus.",
+      "category": "brand_ambient"
+    }
+  ]
+}
