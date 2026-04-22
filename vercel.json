@@ -4,19 +4,14 @@
   "installCommand": "echo 'install handled in buildCommand'",
   "redirects": [
     {
-      "source": "/meetings/greenline-activations/intro-call-calendar",
-      "destination": "https://meetings.hubspot.com/greenline-activations/intro-call-calendar",
-      "permanent": false
+      "source": "/meetings/:path*",
+      "destination": "https://meetings.hubspot.com/greenline-activations/:path*",
+      "permanent": true
     },
     {
-      "source": "/meetings/greenline-activations/ambassador-onboarding",
-      "destination": "https://meetings.hubspot.com/greenline-activations/ambassador-onboarding",
-      "permanent": false
-    },
-    {
-      "source": "/meetings/greenline-activations/greenline-activations-strategy-call",
-      "destination": "https://meetings.hubspot.com/greenline-activations/greenline-activations-strategy-call",
-      "permanent": false
+      "source": "/documents/:path*",
+      "destination": "https://app.hubspot.com/documents/:path*",
+      "permanent": true
     }
   ]
 }
