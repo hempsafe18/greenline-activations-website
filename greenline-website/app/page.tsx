@@ -134,38 +134,38 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-4">
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[420px]">
               <Image
-                src="https://images.pexels.com/photos/22699696/pexels-photo-22699696.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-                alt="Street marketing activation"
+                src="/images/3chi-sampling-event-setup.jpg"
+                alt="3Chi sampling event setup"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
               />
               <div className="absolute bottom-3 left-3 bg-ink text-bone px-3 py-1 text-[11px] font-display font-black uppercase tracking-wider">
-                Street · Tampa
+                3Chi · Sampling
               </div>
             </div>
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[420px]">
               <Image
-                src="https://images.unsplash.com/photo-1719427129712-6dd7b5f101f8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHwzfHxncm9jZXJ5JTIwc3RvcmUlMjBzYW1wbGluZ3xlbnwwfHx8fDE3NzY3NjIxMDF8MA&ixlib=rb-4.1.0&q=85"
-                alt="Grocery store sampling"
+                src="/images/senorita-sampling-event-setup.jpg"
+                alt="Señorita sampling event setup"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
               />
               <div className="absolute bottom-3 left-3 bg-canopy text-ink px-3 py-1 text-[11px] font-display font-black uppercase tracking-wider">
-                Grocery · Miami
+                Señorita · Sampling
               </div>
             </div>
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[420px]">
               <Image
-                src="https://images.unsplash.com/photo-1760530627550-fbb75c769bd4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwxfHxiZXZlcmFnZSUyMHRhc3RpbmclMjBldmVudHxlbnwwfHx8fDE3NzY3NjIxMDF8MA&ixlib=rb-4.1.0&q=85"
-                alt="Beverage tasting event"
+                src="/images/the-good-poor-event-sampling.jpg"
+                alt="The Good & Poor event sampling"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
               />
               <div className="absolute bottom-3 left-3 bg-street text-bone px-3 py-1 text-[11px] font-display font-black uppercase tracking-wider">
-                Tasting · Orlando
+                The Good &amp; Poor · Event
               </div>
             </div>
           </div>
