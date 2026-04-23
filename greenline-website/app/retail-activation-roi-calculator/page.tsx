@@ -79,7 +79,7 @@ export default function ROICalculatorPage() {
   const sprintLabel = acts >= 60 ? "Sprint 3" : acts >= 30 ? "Sprint 2" : acts >= 12 ? "Sprint 1" : "Test Pilot";
 
   const comparisonRows: [string, string, string, string, string][] = [
-    ["Price per activation", "$180–$200", "$150–180", "$100–150", "$300+ (loaded)"],
+    ["Price per activation", "$165–$200", "$180–225", "$100–150", "$300+ (loaded)"],
     ["HempSafe certified rep", "✓", "✗", "✗", "Varies"],
     ["Geo-tracked check-in", "✓", "✓", "✗", "✗"],
     ["25-point post-visit report", "✓", "✗", "✗", "✗"],
