@@ -29,7 +29,7 @@ export interface BlogPost {
 async function fetchRss(): Promise<string> {
   for (const url of RSS_CANDIDATES) {
     try {
-      const res = await fetch(url, { headers: FETCH_HEADERS, cache: "no-store" });
+      const res = await fetch(url, { headers: FETCH_HEADERS, cache: "force-cache" });
       if (res.ok) {
         const text = await res.text();
         // Sanity-check: must look like XML
