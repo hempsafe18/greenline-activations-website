@@ -1,6 +1,18 @@
 import { XMLParser } from "fast-xml-parser";
 
-const BLOG_RSS = "https://blog.greenlineactivations.com/rss.xml";
+// HubSpot strips non-browser requests — spoof a real UA so the CDN allows through
+const FETCH_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (compatible; Next.js/15 build; +https://greenlineactivations.com)",
+  Accept: "application/rss+xml, application/xml, text/xml, */*",
+};
+
+// HubSpot blogs can serve RSS from several paths; try in order
+const RSS_CANDIDATES = [
+  "https://blog.greenlineactivations.com/rss.xml",
+  "https://blog.greenlineactivations.com/blog/rss.xml",
+  "https://blog.greenlineactivations.com/feed",
+];
 
 export interface BlogPost {
   id: string;
@@ -14,31 +26,39 @@ export interface BlogPost {
   tagNames: string[];
 }
 
-// Extract slug from a full HubSpot blog URL:
-// https://blog.greenlineactivations.com/blog/my-post → my-post
-function slugFromUrl(url: string): string {
-  return url.replace(/^https?:\/\/[^/]+\/blog\//, "").replace(/\/$/, "");
-}
-
-// Pull the first <img src> out of an HTML string (used as fallback featured image)
-function firstImgSrc(html: string): string | null {
-  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return m ? m[1] : null;
+async function fetchRss(): Promise<string> {
+  for (const url of RSS_CANDIDATES) {
+    try {
+      const res = await fetch(url, { headers: FETCH_HEADERS, cache: "no-store" });
+      if (res.ok) {
+        const text = await res.text();
+        // Sanity-check: must look like XML
+        if (text.trimStart().startsWith("<")) return text;
+        console.warn(`[blog] ${url} returned non-XML (${res.status})`);
+      } else {
+        console.warn(`[blog] ${url} → ${res.status} ${res.statusText}`);
+      }
+    } catch (err) {
+      console.warn(`[blog] ${url} fetch error:`, err);
+    }
+  }
+  throw new Error("[blog] All RSS candidates failed — check HubSpot blog domain settings");
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const res = await fetch(BLOG_RSS, { next: { revalidate: 3600 } });
-  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
-  const xml = await res.text();
+  const xml = await fetchRss();
 
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@_",
-    // Treat these as arrays even when there's only one item
     isArray: (name) => name === "item" || name === "category",
   });
   const feed = parser.parse(xml);
   const items: RssItem[] = feed?.rss?.channel?.item ?? [];
+
+  if (items.length === 0) {
+    console.warn("[blog] RSS parsed OK but contained 0 items");
+  }
 
   return items.map((item) => {
     const url = typeof item.link === "string" ? item.link : String(item.link ?? "");
@@ -60,7 +80,9 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
       title: item.title ?? "",
       metaDescription: stripHtml(item.description ?? "").slice(0, 300),
       featuredImageUrl: mediaUrl,
-      publishDate: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
+      publishDate: item.pubDate
+        ? new Date(item.pubDate).toISOString()
+        : new Date().toISOString(),
       authorName: item["dc:creator"] ?? item.author ?? "Greenline",
       htmlBody,
       tagNames,
@@ -71,6 +93,19 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   const all = await getAllBlogPosts();
   return all.find((p) => p.slug === slug) ?? null;
+}
+
+// https://blog.greenlineactivations.com/blog/my-post  →  my-post
+function slugFromUrl(url: string): string {
+  return url
+    .replace(/^https?:\/\/[^/]+\/blog\//, "")
+    .replace(/^https?:\/\/[^/]+\//, "")
+    .replace(/\/$/, "");
+}
+
+function firstImgSrc(html: string): string | null {
+  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return m ? m[1] : null;
 }
 
 function stripHtml(html: string): string {

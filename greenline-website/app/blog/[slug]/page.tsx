@@ -49,7 +49,7 @@ export default async function BlogPostPage({ params }: Props) {
             All posts
           </Link>
 
-          <span className="tag mb-4">Blog</span>
+          <span className="tag mb-4">The Activation</span>
 
           <h1 className="text-4xl md:text-5xl font-bold text-dark mt-4 mb-6 leading-tight">
             {post.title}

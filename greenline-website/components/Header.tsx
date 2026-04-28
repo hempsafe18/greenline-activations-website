@@ -6,7 +6,7 @@ import { useCart } from "./CartContext";
 
 const navLinks = [
   { label: "Sprints", href: "/sprints" },
-  { label: "Blog", href: "/blog" },
+  { label: "The Activation", href: "/blog" },
   { label: "Pilot Program", href: "/pilot-program" },
   { label: "ROI Calculator", href: "/retail-activation-roi-calculator" },
   { label: "Ambassadors", href: "/brand-ambassador-opportunities" },

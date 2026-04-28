@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/hubspot";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "The Activation",
   description:
     "Field marketing insights, retail activation strategies, and brand ambassador tips from the Greenline team.",
 };
@@ -18,7 +18,7 @@ export default async function BlogIndexPage() {
         <div className="container-lg">
           <span className="tag mb-4">Field Marketing Insights</span>
           <h1 className="text-5xl font-bold text-dark mt-4 mb-4 leading-tight">
-            The Greenline <span className="text-green">Blog</span>
+            The <span className="text-green">Activation</span>
           </h1>
           <p className="text-xl font-body text-gray-600 leading-relaxed max-w-2xl">
             Retail activation playbooks, ambassador program tips, and field marketing
