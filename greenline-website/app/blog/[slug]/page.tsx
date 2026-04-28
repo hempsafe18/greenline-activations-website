@@ -11,8 +11,7 @@ export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const posts = await getAllBlogPosts().catch(() => []);
-  // With output:export, an empty array causes a build error; use a placeholder
-  // that will resolve to notFound() at runtime when no posts are available.
+  // output:export requires at least one param; placeholder resolves to notFound()
   if (posts.length === 0) return [{ slug: "_" }];
   return posts.map((p) => ({ slug: p.slug }));
 }
@@ -36,45 +35,73 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16">
-      <Link
-        href="/blog/"
-        className="text-sm font-mono text-ink/50 hover:text-canopy transition-colors mb-8 inline-block"
-      >
-        ← All posts
-      </Link>
+    <>
+      {/* Hero */}
+      <section className="section bg-cream">
+        <div className="container-lg max-w-3xl">
+          <Link
+            href="/blog/"
+            className="eyebrow hover:text-green transition-colors mb-6 inline-flex items-center gap-1"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            All posts
+          </Link>
 
+          <span className="tag mb-4">Blog</span>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-dark mt-4 mb-6 leading-tight">
+            {post.title}
+          </h1>
+
+          <div className="flex items-center gap-3 font-body text-sm text-gray-500">
+            <span>{post.authorName}</span>
+            <span>·</span>
+            <span>
+              {new Date(post.publishDate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured image */}
       {post.featuredImageUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={post.featuredImageUrl}
-          alt={post.title}
-          className="w-full rounded-xl border-2 border-ink mb-8 object-cover max-h-80"
-        />
+        <div className="container-lg max-w-3xl px-4 -mt-4 mb-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={post.featuredImageUrl}
+            alt={post.title}
+            className="w-full border-2 border-ink shadow-brutal object-cover max-h-96"
+          />
+        </div>
       )}
 
-      <h1 className="text-4xl font-black uppercase tracking-tight leading-tight mb-4">
-        {post.title}
-      </h1>
+      {/* Body */}
+      <section className="section">
+        <div className="container-lg max-w-3xl">
+          <article
+            className="prose prose-lg prose-neutral max-w-none
+              prose-headings:font-display prose-headings:font-bold prose-headings:text-dark
+              prose-a:text-green prose-a:no-underline hover:prose-a:underline
+              prose-img:border-2 prose-img:border-ink prose-img:shadow-brutal"
+            dangerouslySetInnerHTML={{ __html: post.htmlBody }}
+          />
 
-      <div className="flex items-center gap-3 text-sm text-ink/50 font-mono mb-10 border-b-2 border-ink/10 pb-6">
-        <span>{post.authorName}</span>
-        <span>·</span>
-        <span>
-          {new Date(post.publishDate).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </span>
-      </div>
-
-      <article
-        className="prose prose-lg prose-neutral max-w-none
-          prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight
-          prose-a:text-canopy prose-a:no-underline hover:prose-a:underline"
-        dangerouslySetInnerHTML={{ __html: post.htmlBody }}
-      />
-    </div>
+          <div className="mt-16 pt-8 border-t-2 border-ink flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <Link href="/blog/" className="btn-secondary text-sm">
+              ← Back to Blog
+            </Link>
+            <Link href="/sprints" className="btn-canopy text-sm">
+              Build a Sprint →
+            </Link>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
