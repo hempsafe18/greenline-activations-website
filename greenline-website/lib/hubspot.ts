@@ -1,13 +1,6 @@
-import { Client } from "@hubspot/api-client";
+import { XMLParser } from "fast-xml-parser";
 
-// Portal ID for the Greenline Activations HubSpot account
-export const HUBSPOT_PORTAL_ID = "47886643";
-
-function getClient() {
-  const token = process.env.HUBSPOT_ACCESS_TOKEN;
-  if (!token) throw new Error("HUBSPOT_ACCESS_TOKEN is not set");
-  return new Client({ accessToken: token });
-}
+const BLOG_RSS = "https://blog.greenlineactivations.com/rss.xml";
 
 export interface BlogPost {
   id: string;
@@ -21,27 +14,58 @@ export interface BlogPost {
   tagNames: string[];
 }
 
+// Extract slug from a full HubSpot blog URL:
+// https://blog.greenlineactivations.com/blog/my-post → my-post
+function slugFromUrl(url: string): string {
+  return url.replace(/^https?:\/\/[^/]+\/blog\//, "").replace(/\/$/, "");
+}
+
+// Pull the first <img src> out of an HTML string (used as fallback featured image)
+function firstImgSrc(html: string): string | null {
+  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return m ? m[1] : null;
+}
+
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const client = getClient();
-  const posts: BlogPost[] = [];
-  let after: string | undefined;
+  const res = await fetch(BLOG_RSS, { next: { revalidate: 3600 } });
+  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
+  const xml = await res.text();
 
-  do {
-    // getPage(createdAt, createdAfter, createdBefore, updatedAt, updatedAfter,
-    //         updatedBefore, sort, after, limit, archived, property)
-    const res = await client.cms.blogs.blogPosts.basicApi.getPage(
-      undefined, undefined, undefined, undefined, undefined,
-      undefined, undefined, after, 100, false
-    );
-    for (const p of res.results) {
-      posts.push(normalizeBlogPost(p));
-    }
-    after = res.paging?.next?.after;
-  } while (after);
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "@_",
+    // Treat these as arrays even when there's only one item
+    isArray: (name) => name === "item" || name === "category",
+  });
+  const feed = parser.parse(xml);
+  const items: RssItem[] = feed?.rss?.channel?.item ?? [];
 
-  return posts.sort(
-    (a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
-  );
+  return items.map((item) => {
+    const url = typeof item.link === "string" ? item.link : String(item.link ?? "");
+    const slug = slugFromUrl(url);
+    const htmlBody: string = item["content:encoded"] ?? item.description ?? "";
+    const mediaUrl: string | null =
+      item["media:content"]?.["@_url"] ??
+      item.enclosure?.["@_url"] ??
+      firstImgSrc(htmlBody);
+
+    const categories = item.category ?? [];
+    const tagNames = (Array.isArray(categories) ? categories : [categories])
+      .map(String)
+      .filter(Boolean);
+
+    return {
+      id: slug || url,
+      slug,
+      title: item.title ?? "",
+      metaDescription: stripHtml(item.description ?? "").slice(0, 300),
+      featuredImageUrl: mediaUrl,
+      publishDate: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
+      authorName: item["dc:creator"] ?? item.author ?? "Greenline",
+      htmlBody,
+      tagNames,
+    };
+  });
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
@@ -49,21 +73,19 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
   return all.find((p) => p.slug === slug) ?? null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeBlogPost(p: any): BlogPost {
-  const rawSlug: string = p.slug ?? p.url ?? p.id;
-  // HubSpot slugs may come back as "/blog/my-post" — strip the prefix
-  const slug = rawSlug.replace(/^\/?blog\//, "").replace(/^\//, "");
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
 
-  return {
-    id: String(p.id),
-    slug,
-    title: p.title ?? "",
-    metaDescription: p.metaDescription ?? p.postSummary ?? "",
-    featuredImageUrl: p.featuredImage ?? p.featuredImageAltText ?? null,
-    publishDate: p.publishDate ?? p.created ?? new Date().toISOString(),
-    authorName: p.blogAuthorId ? (p.authorName ?? "Greenline") : "Greenline",
-    htmlBody: p.postBody ?? p.htmlBody ?? "",
-    tagNames: (p.tagIds ?? []).map(String),
-  };
+interface RssItem {
+  title?: string;
+  link?: string;
+  pubDate?: string;
+  description?: string;
+  "content:encoded"?: string;
+  "dc:creator"?: string;
+  author?: string;
+  category?: string | string[];
+  "media:content"?: { "@_url"?: string };
+  enclosure?: { "@_url"?: string };
 }

@@ -13,8 +13,5 @@
       "destination": "https://app.hubspot.com/documents/:path*",
       "permanent": true
     }
-  ],
-  "env": {
-    "HUBSPOT_ACCESS_TOKEN": "@hubspot-access-token"
-  }
+  ]
 }
