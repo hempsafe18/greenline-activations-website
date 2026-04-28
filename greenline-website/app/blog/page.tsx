@@ -1,19 +1,44 @@
-import type { Metadata } from "next";
+"use client";
+
+// Single shell page for all blog routes.
+// Vercel rewrites /blog/:path+ → /blog/ so this file handles both
+// the listing (/blog/) and individual posts (/blog/my-post/).
+// Slug is read from window.location so no dynamic route params are needed.
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllBlogPosts } from "@/lib/hubspot";
+import { getAllBlogPosts, getBlogPostBySlug, type BlogPost } from "@/lib/hubspot";
 
-export const metadata: Metadata = {
-  title: "The Activation",
-  description:
-    "Field marketing insights, retail activation strategies, and brand ambassador tips from the Greenline team.",
-};
+export default function BlogPage() {
+  const [slug, setSlug] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
-export default async function BlogIndexPage() {
-  const posts = await getAllBlogPosts().catch(() => []);
+  useEffect(() => {
+    const parts = window.location.pathname.replace(/\/$/, "").split("/").filter(Boolean);
+    // parts = ["blog"] → listing; ["blog", "my-post"] → post
+    setSlug(parts.length > 1 ? parts[parts.length - 1] : null);
+    setReady(true);
+  }, []);
+
+  if (!ready) return null;
+  return slug ? <BlogPost slug={slug} /> : <BlogListing />;
+}
+
+// ─── Listing ──────────────────────────────────────────────────────────────────
+
+function BlogListing() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getAllBlogPosts()
+      .then(setPosts)
+      .catch(() => setPosts([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <>
-      {/* Hero */}
       <section className="section bg-cream">
         <div className="container-lg">
           <span className="tag mb-4">Field Marketing Insights</span>
@@ -27,20 +52,23 @@ export default async function BlogIndexPage() {
         </div>
       </section>
 
-      {/* Posts grid */}
       <section className="section">
         <div className="container-lg">
-          {posts.length === 0 ? (
+          {loading ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="card h-64 animate-pulse bg-gray-100" />
+              ))}
+            </div>
+          ) : posts.length === 0 ? (
             <div className="text-center py-24 border-2 border-ink bg-white">
-              <p className="text-2xl font-display font-bold text-dark mb-2">
-                No posts yet
-              </p>
+              <p className="text-2xl font-display font-bold text-dark mb-2">No posts yet</p>
               <p className="text-gray-500 font-body">Check back soon — new content is on the way.</p>
             </div>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => (
-                <Link
+                <a
                   key={post.id}
                   href={`/blog/${post.slug}/`}
                   className="card card-hover flex flex-col group bg-white"
@@ -76,14 +104,13 @@ export default async function BlogIndexPage() {
                       </svg>
                     </span>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* CTA */}
       <section className="section bg-dark text-white text-center">
         <div className="container-lg max-w-2xl">
           <h2 className="text-4xl font-bold mb-4">Ready to Activate?</h2>
@@ -93,6 +120,107 @@ export default async function BlogIndexPage() {
           <Link href="/sprints" className="btn-coral">
             See Pricing & Build a Sprint
           </Link>
+        </div>
+      </section>
+    </>
+  );
+}
+
+// ─── Post ─────────────────────────────────────────────────────────────────────
+
+function BlogPost({ slug }: { slug: string }) {
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getBlogPostBySlug(slug)
+      .then((p) => {
+        if (!p) window.location.replace("/blog/");
+        else setPost(p);
+      })
+      .catch(() => window.location.replace("/blog/"))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <section className="section">
+        <div className="container-lg max-w-3xl space-y-4">
+          <div className="h-8 w-1/3 bg-gray-200 animate-pulse rounded" />
+          <div className="h-12 w-2/3 bg-gray-200 animate-pulse rounded" />
+          <div className="h-64 bg-gray-100 animate-pulse rounded" />
+        </div>
+      </section>
+    );
+  }
+
+  if (!post) return null;
+
+  return (
+    <>
+      <section className="section bg-cream">
+        <div className="container-lg max-w-3xl">
+          <a
+            href="/blog/"
+            className="eyebrow hover:text-green transition-colors mb-6 inline-flex items-center gap-1"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            The Activation
+          </a>
+
+          <span className="tag mb-4 block mt-4">The Activation</span>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-dark mt-4 mb-6 leading-tight">
+            {post.title}
+          </h1>
+
+          <div className="flex items-center gap-3 font-body text-sm text-gray-500">
+            <span>{post.authorName}</span>
+            <span>·</span>
+            <span>
+              {new Date(post.publishDate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {post.featuredImageUrl && (
+        <div className="px-4">
+          <div className="container-lg max-w-3xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.featuredImageUrl}
+              alt={post.title}
+              className="w-full border-2 border-ink shadow-brutal object-cover max-h-96"
+            />
+          </div>
+        </div>
+      )}
+
+      <section className="section">
+        <div className="container-lg max-w-3xl">
+          <article
+            className="prose prose-lg prose-neutral max-w-none
+              prose-headings:font-display prose-headings:font-bold prose-headings:text-dark
+              prose-a:text-green prose-a:no-underline hover:prose-a:underline
+              prose-img:border-2 prose-img:border-ink prose-img:shadow-brutal"
+            dangerouslySetInnerHTML={{ __html: post.htmlBody }}
+          />
+
+          <div className="mt-16 pt-8 border-t-2 border-ink flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <a href="/blog/" className="btn-secondary text-sm">
+              ← The Activation
+            </a>
+            <Link href="/sprints" className="btn-canopy text-sm">
+              Build a Sprint →
+            </Link>
+          </div>
         </div>
       </section>
     </>

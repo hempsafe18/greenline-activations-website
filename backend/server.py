@@ -599,4 +599,85 @@ async def onboarding_request(req: OnboardingRequest):
     return {"ok": True, "message": "Onboarding request received. We'll reach out within one business day."}
 
 
+# ---------- Blog (proxy RSS from HubSpot; avoids CDN host-allowlist block on Vercel) ----------
+
+BLOG_RSS_CANDIDATES = [
+    "https://blog.greenlineactivations.com/rss.xml",
+    "https://blog.greenlineactivations.com/blog/rss.xml",
+    "https://blog.greenlineactivations.com/feed",
+]
+_RSS_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; Greenline/1.0; +https://greenlineactivations.com)",
+    "Accept": "application/rss+xml, application/xml, text/xml, */*",
+}
+
+
+def _slug_from_url(url: str) -> str:
+    import re
+    url = url.rstrip("/")
+    url = re.sub(r"^https?://[^/]+/blog/", "", url)
+    url = re.sub(r"^https?://[^/]+/", "", url)
+    return url
+
+
+def _strip_html(text: str) -> str:
+    import re
+    return re.sub(r"<[^>]+>", " ", text).strip()
+
+
+@api.get("/blog/posts")
+async def get_blog_posts():
+    import feedparser
+    import httpx
+
+    raw_xml: str | None = None
+    async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
+        for url in BLOG_RSS_CANDIDATES:
+            try:
+                resp = await client.get(url, headers=_RSS_HEADERS)
+                if resp.status_code == 200 and resp.text.lstrip().startswith("<"):
+                    raw_xml = resp.text
+                    break
+                logger.warning(f"[blog] {url} → {resp.status_code}")
+            except Exception as exc:
+                logger.warning(f"[blog] {url} error: {exc}")
+
+    if not raw_xml:
+        return {"posts": []}
+
+    feed = feedparser.parse(raw_xml)
+    posts = []
+    for entry in feed.entries:
+        link = entry.get("link", "")
+        slug = _slug_from_url(link)
+
+        img = None
+        if entry.get("media_content"):
+            img = entry.media_content[0].get("url")
+        if not img and entry.get("enclosures"):
+            img = entry.enclosures[0].get("href")
+
+        html_body = ""
+        if entry.get("content"):
+            html_body = entry.content[0].get("value", "")
+        if not html_body:
+            html_body = entry.get("summary", "")
+
+        summary_text = _strip_html(entry.get("summary", ""))[:300]
+
+        posts.append({
+            "id": slug or link,
+            "slug": slug,
+            "title": entry.get("title", ""),
+            "metaDescription": summary_text,
+            "featuredImageUrl": img,
+            "publishDate": entry.get("published", ""),
+            "authorName": entry.get("author", "Greenline"),
+            "htmlBody": html_body,
+            "tagNames": [t.get("term", "") for t in entry.get("tags", [])],
+        })
+
+    return {"posts": posts}
+
+
 app.include_router(api)
