@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 
-BASE_URL = os.environ.get("NEXT_PUBLIC_BACKEND_URL", "https://ff6a1df0-4c2f-4643-a00b-791d47270247.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("NEXT_PUBLIC_BACKEND_URL", "https://blog-cms-hub-2.preview.emergentagent.com").rstrip("/")
 
 
 @pytest.fixture(scope="module")
