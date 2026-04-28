@@ -34,7 +34,7 @@ function BlogListing() {
   useEffect(() => {
     getAllBlogPosts()
       .then(setPosts)
-      .catch((e) => { setFetchError(String(e)); setPosts([]); })
+      .catch((e) => { console.error("[blog]", e); setFetchError(String(e)); setPosts([]); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -65,11 +65,6 @@ function BlogListing() {
             <div className="text-center py-24 border-2 border-ink bg-white">
               <p className="text-2xl font-display font-bold text-dark mb-2">No posts yet</p>
               <p className="text-gray-500 font-body">Check back soon — new content is on the way.</p>
-              {fetchError && (
-                <p className="mt-4 text-xs font-mono text-red-500 max-w-lg mx-auto break-all">
-                  {fetchError}
-                </p>
-              )}
             </div>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

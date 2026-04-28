@@ -13,12 +13,11 @@ export interface BlogPost {
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
+  if (!API_BASE) throw new Error("NEXT_PUBLIC_BACKEND_URL is not configured");
   const res = await fetch(`${API_BASE}/api/blog/posts`);
-  if (!res.ok) throw new Error(`Blog API ${res.status} — is NEXT_PUBLIC_BACKEND_URL set in Vercel?`);
+  if (!res.ok) throw new Error(`Blog API ${res.status}`);
   const data = await res.json();
-  if (data.errors?.length) {
-    console.error("[blog] backend errors:", data.errors);
-  }
+  if (data.errors?.length) console.error("[blog] backend errors:", data.errors);
   return (data.posts ?? []) as BlogPost[];
 }
 
