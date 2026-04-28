@@ -13,11 +13,5 @@
       "destination": "https://app.hubspot.com/documents/:path*",
       "permanent": true
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/blog/:path+",
-      "destination": "/blog/"
-    }
   ]
 }

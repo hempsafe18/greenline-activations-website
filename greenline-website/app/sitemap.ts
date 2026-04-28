@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllBlogPosts } from "@/lib/hubspot";
+import { getAllBlogPosts } from "@/lib/contentful";
 
 export const dynamic = "force-static";
 
