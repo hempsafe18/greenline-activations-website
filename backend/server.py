@@ -678,6 +678,43 @@ def _posts_from_hubspot_v3(data: dict) -> list:
     return posts
 
 
+@api.get("/blog/debug")
+async def blog_debug():
+    """Hit this URL in a browser to see exactly what each strategy returns."""
+    import httpx
+    results = []
+
+    async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
+        for url in BLOG_RSS_CANDIDATES:
+            try:
+                resp = await client.get(url, headers=_BROWSER_HEADERS)
+                results.append({
+                    "url": url,
+                    "status": resp.status_code,
+                    "content_type": resp.headers.get("content-type", ""),
+                    "body_preview": resp.text[:300],
+                })
+            except Exception as exc:
+                results.append({"url": url, "error": str(exc)})
+
+        if HUBSPOT_ACCESS_TOKEN:
+            try:
+                resp = await client.get(
+                    "https://api.hubapi.com/cms/v3/blogs/posts",
+                    params={"limit": 5, "state": "PUBLISHED"},
+                    headers={"Authorization": f"Bearer {HUBSPOT_ACCESS_TOKEN}"},
+                )
+                results.append({
+                    "url": "hubspot_api_v3",
+                    "status": resp.status_code,
+                    "body_preview": resp.text[:500],
+                })
+            except Exception as exc:
+                results.append({"url": "hubspot_api_v3", "error": str(exc)})
+
+    return {"debug": results, "token_set": bool(HUBSPOT_ACCESS_TOKEN)}
+
+
 @api.get("/blog/posts")
 async def get_blog_posts():
     import httpx
