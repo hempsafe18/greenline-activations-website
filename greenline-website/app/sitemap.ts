@@ -1,14 +1,26 @@
 import type { MetadataRoute } from "next";
+import { getAllBlogPosts } from "@/lib/hubspot";
 
 export const dynamic = "force-static";
 
 const BASE = "https://greenlineactivations.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date("2026-04-21");
+
+  const blogPosts = await getAllBlogPosts().catch(() => []);
+  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((p) => ({
+    url: `${BASE}/blog/${p.slug}/`,
+    lastModified: new Date(p.publishDate),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
   return [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
     { url: `${BASE}/sprints/`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/blog/`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
+    ...blogEntries,
     { url: `${BASE}/pilot-program/`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/retail-activation-roi-calculator/`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/schedule-an-intro-call/`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
