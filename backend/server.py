@@ -599,14 +599,17 @@ async def onboarding_request(req: OnboardingRequest):
     return {"ok": True, "message": "Onboarding request received. We'll reach out within one business day."}
 
 
-# ---------- Blog (proxy RSS from HubSpot; avoids CDN host-allowlist block on Vercel) ----------
+# ---------- Blog (proxy HubSpot content; multiple fallback strategies) ----------
+
+HUBSPOT_PORTAL_ID = "47886643"
+HUBSPOT_ACCESS_TOKEN = os.environ.get("HUBSPOT_ACCESS_TOKEN", "")
 
 BLOG_RSS_CANDIDATES = [
     "https://blog.greenlineactivations.com/rss.xml",
     "https://blog.greenlineactivations.com/blog/rss.xml",
     "https://blog.greenlineactivations.com/feed",
 ]
-_RSS_HEADERS = {
+_BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; Greenline/1.0; +https://greenlineactivations.com)",
     "Accept": "application/rss+xml, application/xml, text/xml, */*",
 }
@@ -625,59 +628,118 @@ def _strip_html(text: str) -> str:
     return re.sub(r"<[^>]+>", " ", text).strip()
 
 
-@api.get("/blog/posts")
-async def get_blog_posts():
+def _posts_from_rss(raw_xml: str) -> list:
     import feedparser
-    import httpx
-
-    raw_xml: str | None = None
-    async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
-        for url in BLOG_RSS_CANDIDATES:
-            try:
-                resp = await client.get(url, headers=_RSS_HEADERS)
-                if resp.status_code == 200 and resp.text.lstrip().startswith("<"):
-                    raw_xml = resp.text
-                    break
-                logger.warning(f"[blog] {url} → {resp.status_code}")
-            except Exception as exc:
-                logger.warning(f"[blog] {url} error: {exc}")
-
-    if not raw_xml:
-        return {"posts": []}
-
     feed = feedparser.parse(raw_xml)
     posts = []
     for entry in feed.entries:
         link = entry.get("link", "")
         slug = _slug_from_url(link)
-
         img = None
         if entry.get("media_content"):
             img = entry.media_content[0].get("url")
         if not img and entry.get("enclosures"):
             img = entry.enclosures[0].get("href")
-
         html_body = ""
         if entry.get("content"):
             html_body = entry.content[0].get("value", "")
         if not html_body:
             html_body = entry.get("summary", "")
-
-        summary_text = _strip_html(entry.get("summary", ""))[:300]
-
         posts.append({
             "id": slug or link,
             "slug": slug,
             "title": entry.get("title", ""),
-            "metaDescription": summary_text,
+            "metaDescription": _strip_html(entry.get("summary", ""))[:300],
             "featuredImageUrl": img,
             "publishDate": entry.get("published", ""),
             "authorName": entry.get("author", "Greenline"),
             "htmlBody": html_body,
             "tagNames": [t.get("term", "") for t in entry.get("tags", [])],
         })
+    return posts
 
-    return {"posts": posts}
+
+def _posts_from_hubspot_v3(data: dict) -> list:
+    posts = []
+    for p in data.get("results", []):
+        url = p.get("url", p.get("slug", ""))
+        slug = _slug_from_url(url) if url.startswith("http") else url.strip("/").split("/")[-1]
+        posts.append({
+            "id": str(p.get("id", slug)),
+            "slug": slug,
+            "title": p.get("htmlTitle", p.get("name", "")),
+            "metaDescription": _strip_html(p.get("metaDescription", p.get("postSummary", "")))[:300],
+            "featuredImageUrl": p.get("featuredImage") or None,
+            "publishDate": p.get("publishDate", p.get("created", "")),
+            "authorName": p.get("authorName", "Greenline"),
+            "htmlBody": p.get("postBody", p.get("postSummary", "")),
+            "tagNames": [],
+        })
+    return posts
+
+
+@api.get("/blog/posts")
+async def get_blog_posts():
+    import httpx
+
+    errors: list[str] = []
+
+    async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
+
+        # ── Strategy 1: RSS feed from blog subdomain ──────────────────────────
+        for url in BLOG_RSS_CANDIDATES:
+            try:
+                resp = await client.get(url, headers=_BROWSER_HEADERS)
+                if resp.status_code == 200 and resp.text.lstrip().startswith("<"):
+                    posts = _posts_from_rss(resp.text)
+                    logger.info(f"[blog] RSS OK from {url}: {len(posts)} posts")
+                    return {"posts": posts, "source": "rss"}
+                errors.append(f"RSS {url} → {resp.status_code}")
+                logger.warning(f"[blog] {errors[-1]}")
+            except Exception as exc:
+                errors.append(f"RSS {url} error: {exc}")
+                logger.warning(f"[blog] {errors[-1]}")
+
+        # ── Strategy 2: HubSpot CMS API v3 (private app token) ───────────────
+        if HUBSPOT_ACCESS_TOKEN:
+            try:
+                resp = await client.get(
+                    "https://api.hubapi.com/cms/v3/blogs/posts",
+                    params={"limit": 100, "state": "PUBLISHED"},
+                    headers={"Authorization": f"Bearer {HUBSPOT_ACCESS_TOKEN}"},
+                )
+                if resp.status_code == 200:
+                    posts = _posts_from_hubspot_v3(resp.json())
+                    logger.info(f"[blog] HubSpot API v3 OK: {len(posts)} posts")
+                    return {"posts": posts, "source": "hubspot_v3"}
+                errors.append(f"HubSpot v3 → {resp.status_code}: {resp.text[:200]}")
+                logger.warning(f"[blog] {errors[-1]}")
+            except Exception as exc:
+                errors.append(f"HubSpot v3 error: {exc}")
+                logger.warning(f"[blog] {errors[-1]}")
+        else:
+            errors.append("HubSpot v3 skipped (HUBSPOT_ACCESS_TOKEN not set)")
+
+        # ── Strategy 3: HubSpot Content API v2 (legacy, portal-ID only) ──────
+        try:
+            resp = await client.get(
+                "https://api.hubapi.com/content/api/v2/blog-posts",
+                params={"portal_id": HUBSPOT_PORTAL_ID, "state": "PUBLISHED", "limit": 100},
+                headers=_BROWSER_HEADERS,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                posts = _posts_from_hubspot_v3({"results": data.get("objects", [])})
+                logger.info(f"[blog] HubSpot API v2 OK: {len(posts)} posts")
+                return {"posts": posts, "source": "hubspot_v2"}
+            errors.append(f"HubSpot v2 → {resp.status_code}: {resp.text[:200]}")
+            logger.warning(f"[blog] {errors[-1]}")
+        except Exception as exc:
+            errors.append(f"HubSpot v2 error: {exc}")
+            logger.warning(f"[blog] {errors[-1]}")
+
+    logger.error(f"[blog] All strategies failed: {errors}")
+    return {"posts": [], "errors": errors}
 
 
 app.include_router(api)
