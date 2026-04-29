@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllBlogPosts } from "@/lib/contentful";
+import { getAllBlogPosts } from "@/lib/blog-api";
 
 export const metadata: Metadata = {
   title: "The Activation",
@@ -41,17 +41,17 @@ export default async function BlogIndexPage() {
                   href={`/blog/${post.slug}/`}
                   className="card card-hover flex flex-col group bg-white"
                 >
-                  {post.featuredImageUrl && (
+                  {post.featured_image_url && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={post.featuredImageUrl}
+                      src={post.featured_image_url}
                       alt={post.title}
                       className="w-full h-48 object-cover border-b-2 border-ink -mx-8 -mt-8 mb-6 w-[calc(100%+4rem)]"
                     />
                   )}
                   <div className="flex flex-col flex-1">
                     <p className="eyebrow mb-3">
-                      {new Date(post.publishDate).toLocaleDateString("en-US", {
+                      {new Date(post.publish_date).toLocaleDateString("en-US", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -60,9 +60,9 @@ export default async function BlogIndexPage() {
                     <h2 className="text-xl font-display font-bold text-dark leading-snug group-hover:text-green transition-colors mb-3">
                       {post.title}
                     </h2>
-                    {post.metaDescription && (
+                    {post.meta_description && (
                       <p className="font-body text-gray-600 text-sm leading-relaxed line-clamp-3 flex-1">
-                        {post.metaDescription}
+                        {post.meta_description}
                       </p>
                     )}
                     <span className="mt-4 inline-flex items-center gap-1 font-display font-bold text-sm text-green uppercase tracking-wide">

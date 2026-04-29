@@ -11,6 +11,12 @@
   },
   "dependencies": {
     "@contentful/rich-text-html-renderer": "^17.2.2",
+    "@tiptap/extension-image": "^3.22.5",
+    "@tiptap/extension-link": "^3.22.5",
+    "@tiptap/extension-placeholder": "^3.22.5",
+    "@tiptap/pm": "^3.22.5",
+    "@tiptap/react": "^3.22.5",
+    "@tiptap/starter-kit": "^3.22.5",
     "contentful": "^11.12.1",
     "fast-xml-parser": "^5.7.2",
     "next": "15.1.0",

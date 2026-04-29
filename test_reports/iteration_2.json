@@ -1,0 +1,64 @@
+{
+  "summary": "Tested Greenline CMS backend (15 pytest cases) and frontend (public blog, post slug, admin login good/bad creds, dashboard, logout). Backend: 14/15 passing — 1 CRITICAL bug found (brute-force lockout returns HTTP 500 instead of 429 due to offset-naive vs offset-aware datetime comparison in cms.py _brute_force_guard). Brute-force protection is also weakened by using request.client.host (pod-internal IP) which splits the counter across multiple pods. Frontend: blog index, slug page, login, dashboard, status badges, counts all render correctly with admin cookie auth working end-to-end. Could not exercise New-post → TipTap → Save-draft → Publish via Playwright (selector mismatch on the test script side; backend round-trip works perfectly via API).",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/auth/login (brute force)",
+        "issue": "After 5 failed login attempts, the 6th attempt returns HTTP 500 instead of 429. Backend log: 'TypeError: can\\'t compare offset-naive and offset-aware datetimes' in cms.py:_brute_force_guard at `last >= cutoff`. Mongo returns naive datetime (from {'$set':{'last_attempt': datetime.now(timezone.utc)}} stored without tzinfo by Motor), but cutoff is tz-aware. Fix: when reading rec['last_attempt'], coerce to aware: `last = rec.get('last_attempt'); if last and last.tzinfo is None: last = last.replace(tzinfo=timezone.utc)`. Also store with `datetime.utcnow()` consistently OR ensure read coercion.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "POST /api/auth/login (brute force key)",
+        "issue": "Identifier uses `request.client.host` which in this k8s deploy is the per-pod ingress IP (10.79.131.85 / .86 observed). Counter splits across pods so threshold-of-5 effectively becomes 5 per pod. Use `X-Forwarded-For` (first hop) for real client IP."
+      },
+      {
+        "endpoint": "POST /api/admin/posts (slugify)",
+        "issue": "_slugify regex `[^a-z0-9\\s-]` strips underscores, so a title like 'TEST_Auto Slug' becomes 'testauto-slug' (concatenated). Acceptable but surprising; consider treating `_` as a word boundary."
+      },
+      {
+        "endpoint": "seed_blog_posts_from_csv",
+        "issue": "Guard is `existing_count >= 1` (not >= 12 as the docstring says). Once any single post exists the CSV won't re-seed. Low-impact but doesn't match the comment."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Admin → New Post button",
+        "issue": "Test could not navigate from /admin to /admin/posts/new via Playwright selectors (button labelled '+ NEW POST'). Likely missing data-testid; backend round-trip works perfectly so the bug, if any, is selector-only. Recommend adding data-testid=\"new-post-button\", data-testid=\"post-title-input\", data-testid=\"post-author-input\", data-testid=\"save-draft-button\", data-testid=\"publish-button\", data-testid=\"logout-button\" so future automation reliably exercises the editor flow.",
+        "affected_selectors": ["[data-testid=\"new-post-button\"]"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_cms_blog.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix datetime tz mismatch in cms.py:_brute_force_guard (coerce stored last_attempt to UTC-aware before comparing). This is what causes the 500 and means the lockout never actually engages.",
+    "Use X-Forwarded-For (or starlette's request.headers.get('x-forwarded-for', '').split(',')[0].strip()) for the brute-force identifier so it works behind multi-pod ingress.",
+    "Add data-testid attributes on admin UI: new-post-button, post-title-input, post-author-input, save-draft-button, publish-button, logout-button, login-email, login-password, login-submit.",
+    "Optional: fix _slugify to treat underscores as separators."
+  ],
+  "critical_code_review_comments": [
+    "cms.py _brute_force_guard: TypeError on offset-naive vs aware datetimes — directly turns the lockout into a 500 and never returns 429.",
+    "cms.py uses request.client.host as part of brute-force identifier — in k8s with multiple replicas this is a pod-internal IP that varies request-to-request, defeating the lockout.",
+    "cms.py seed_blog_posts_from_csv: `existing_count >= 1` short-circuits seeding; comment says 'fewer than 12'.",
+    "server.py + cms.py both define their own routers (api with prefix=/api and cms.router with prefix=/api). Dual-router setup is fine but easy to drift; consider mounting cms.router under api once.",
+    "Cloudinary creds are committed in /app/backend/.env (CLOUDINARY_API_SECRET) — make sure the file is gitignored on real deploys."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_cms_blog.py"
+  ],
+  "success_rate": {"backend": "93% (14/15)", "frontend": "85% (5/6 UI flows verified; create-new-post UI flow not validated due to selector gap, but API round-trip green)"},
+  "test_credentials": "admin@greenlineactivations.com / ChangeMe123!  (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "None created. Cleaned a leftover TEST_Auto Slug draft post from prior run (db.blog_posts.deleteMany({title:/^TEST_/}); blog_posts now back to 12). Cleared db.login_attempts before brute-force test.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Use BASE_URL=https://blog-cms-hub-2.preview.emergentagent.com (HTTPS required for Secure+SameSite=Lax cookies). Tests live at /app/backend/tests/test_cms_blog.py (pytest, 15 cases, JUnit at /app/test_reports/pytest/pytest_results.xml). Brute-force test will keep failing until cms.py datetime+identifier issues are fixed. Before re-running brute-force test, clear: mongosh --eval 'db.getSiblingDB(\"greenline_activations\").login_attempts.deleteMany({})'. Public CRUD round-trip (create→publish→read→update→unpublish→delete) is fully green via API.",
+  "rca of the issue": "Brute-force 500: Mongo via Motor returns datetimes without tzinfo. The check `last >= cutoff` (where cutoff = datetime.now(timezone.utc) - timedelta(...)) raises TypeError. FastAPI surfaces it as 500. Reproduction: clear login_attempts, hit /api/auth/login 5 times with bad creds for the same email; the 6th call lands on a pod whose count==5, enters the if-branch, and crashes on the comparison. Fix: in _brute_force_guard, replace the comparison with `last_aware = last if last.tzinfo else last.replace(tzinfo=timezone.utc); if last_aware >= cutoff: raise 429`. Additionally key the lockout on real client IP (X-Forwarded-For) so the counter isn't fragmented across replicas."
+}

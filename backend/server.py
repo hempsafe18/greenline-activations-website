@@ -1,18 +1,22 @@
 """
 Greenline Activations — SaaS backend.
-Handles cart pricing validation, order creation, Stripe checkout, and order lookup.
+Handles cart pricing validation, order creation, Stripe checkout, order lookup,
+and the internal blog CMS (auth + posts + uploads, mounted from cms.py).
 """
+from dotenv import load_dotenv
+load_dotenv()
+
 import asyncio
 import os
 import uuid
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 
 import stripe as stripe_lib
 import resend as resend_lib
 
-from dotenv import load_dotenv
 from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, EmailStr
@@ -25,7 +29,7 @@ from emergentintegrations.payments.stripe.checkout import (
     CheckoutStatusResponse,
 )
 
-load_dotenv()
+import cms
 
 logger = logging.getLogger("greenline")
 logging.basicConfig(level=logging.INFO)
@@ -604,3 +608,21 @@ async def onboarding_request(req: OnboardingRequest):
 
 
 app.include_router(api)
+
+# ---------- CMS module (auth + blog posts + Cloudinary uploads) ----------
+cms.init(db)
+app.include_router(cms.router)
+
+
+@app.on_event("startup")
+async def _cms_startup() -> None:
+    try:
+        await cms.ensure_indexes(db)
+        await cms.seed_admin(db)
+        seeded = await cms.seed_blog_posts_from_csv(
+            db, Path(__file__).parent / "seed_data" / "blog.csv"
+        )
+        if seeded:
+            logger.info("Seeded %s blog posts from CSV", seeded)
+    except Exception:
+        logger.exception("CMS startup failed")
