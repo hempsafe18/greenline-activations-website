@@ -13,6 +13,7 @@
 - `POST /api/auth/logout` — clears cookies
 - `GET /api/auth/me` — current user (cookie-protected)
 - `POST /api/auth/refresh` — refresh access token
+- `POST /api/auth/change-password` — body `{current_password, new_password}` (cookie-protected); reissues fresh session cookies on success
 
 ## Public blog endpoints (no auth)
 - `GET /api/blog/posts` — list of published posts

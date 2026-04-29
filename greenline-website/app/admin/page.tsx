@@ -94,6 +94,13 @@ export default function AdminDashboardPage() {
               {user.email}
             </span>
             <Link
+              href="/admin/account"
+              className="text-xs font-display font-bold uppercase tracking-wider hover:text-canopy"
+              data-testid="admin-account-link"
+            >
+              Account
+            </Link>
+            <Link
               href="/blog"
               target="_blank"
               className="text-xs font-display font-bold uppercase tracking-wider hover:text-canopy"

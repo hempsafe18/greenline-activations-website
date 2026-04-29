@@ -37,6 +37,11 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=1)
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=8, max_length=200)
+
+
 class UserOut(BaseModel):
     id: str
     email: EmailStr
@@ -325,6 +330,40 @@ async def refresh(request: Request, response: Response):
         raise HTTPException(status_code=401, detail="Invalid refresh token")
 
 
+@router.post("/auth/change-password")
+async def change_password(
+    payload: ChangePasswordRequest,
+    response: Response,
+    user: dict = Depends(get_current_user),
+):
+    """Allow the signed-in user to rotate their own password.
+    On success the existing session cookies are reissued so the user
+    stays logged in with a fresh access token.
+    """
+    db = _db_or_raise()
+    fresh = await db.users.find_one({"_id": ObjectId(user["_id"])})
+    if not fresh:
+        raise HTTPException(status_code=401, detail="User not found")
+    if not _verify_password(payload.current_password, fresh.get("password_hash", "")):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if payload.current_password == payload.new_password:
+        raise HTTPException(status_code=400, detail="New password must be different from current password")
+
+    await db.users.update_one(
+        {"_id": fresh["_id"]},
+        {"$set": {
+            "password_hash": _hash_password(payload.new_password),
+            "password_changed_at": datetime.now(timezone.utc).isoformat(),
+        }},
+    )
+
+    user_id = str(fresh["_id"])
+    access = _create_access_token(user_id, fresh.get("email", ""))
+    refresh_tok = _create_refresh_token(user_id)
+    _set_auth_cookies(response, access, refresh_tok)
+    return {"ok": True}
+
+
 # ---------------- Public blog routes ----------------
 @router.get("/blog/posts")
 async def list_published_posts():
@@ -525,6 +564,13 @@ async def ensure_indexes(db) -> None:
 
 
 async def seed_admin(db) -> None:
+    """Create the admin user on first boot only.
+
+    On subsequent boots we DO NOT touch the password hash — that would clobber
+    a self-serve password change. To force-reset the admin password, delete
+    the user document or run a maintenance script that updates `password_hash`
+    directly.
+    """
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com").lower()
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
     existing = await db.users.find_one({"email": admin_email})
@@ -536,11 +582,6 @@ async def seed_admin(db) -> None:
             "role": "admin",
             "created_at": datetime.now(timezone.utc).isoformat(),
         })
-    elif not _verify_password(admin_password, existing.get("password_hash", "")):
-        await db.users.update_one(
-            {"email": admin_email},
-            {"$set": {"password_hash": _hash_password(admin_password)}},
-        )
 
 
 def _csv_date_to_iso(value: str) -> str:

@@ -67,6 +67,10 @@ the user). All seeded as `published`.
 - ✅ 12 CSV posts auto-imported and live at `/blog`
 - ✅ Storefront APIs untouched — no regression on Stripe/orders flow
 - ✅ Brute-force tz-naive datetime bug fixed; 5+ failed attempts → HTTP 429
+- ✅ Self-serve **Change password** screen at `/admin/account` (verified end-to-end)
+- ✅ Real client IP from `X-Forwarded-For` confirmed reaching the brute-force keying
+- ✅ Startup admin-seed no longer clobbers a self-changed password on restart
+- ✅ `/app/backend/.env` confirmed gitignored (`*.env` rule), Cloudinary secret safe
 
 ## Known caveats
 - Cloudinary credentials live in `/app/backend/.env` — make sure that file is

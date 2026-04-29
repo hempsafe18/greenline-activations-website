@@ -79,6 +79,11 @@ export const adminApi = {
   logout: () => jsonFetch<{ ok: true }>("/api/auth/logout", { method: "POST" }),
   me: () => jsonFetch<AdminUser>("/api/auth/me"),
   refresh: () => jsonFetch<{ ok: true }>("/api/auth/refresh", { method: "POST" }),
+  changePassword: (current_password: string, new_password: string) =>
+    jsonFetch<{ ok: true }>("/api/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ current_password, new_password }),
+    }),
   listPosts: () =>
     jsonFetch<{ posts: AdminBlogPost[] }>("/api/admin/posts"),
   getPost: (id: string) => jsonFetch<AdminBlogPost>(`/api/admin/posts/${id}`),
