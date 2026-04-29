@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getBlogPostBySlug } from "@/lib/blog-api";
+import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog-api";
+
+export const dynamicParams = false;
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const posts = await getAllBlogPosts().catch(() => []);
+  if (posts.length === 0) return [{ slug: "_" }];
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -23,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
-  if (!post) notFound();
+  if (!post || slug === "_") notFound();
 
   return (
     <>

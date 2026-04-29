@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getAllBlogPosts } from "@/lib/blog-api";
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8001";
+export const dynamicParams = false;
 
 interface BlogPost {
   id: string;
@@ -19,18 +20,11 @@ interface Props {
   params: Promise<{ tag: string }>;
 }
 
-async function fetchTagPosts(tag: string): Promise<BlogPost[] | null> {
-  try {
-    const res = await fetch(
-      `${BACKEND}/api/blog/tags/${encodeURIComponent(tag)}`,
-      { cache: "no-store" }
-    );
-    if (!res.ok) return null;
-    const data = (await res.json()) as { posts: BlogPost[] };
-    return data.posts;
-  } catch {
-    return null;
-  }
+export async function generateStaticParams() {
+  const posts = await getAllBlogPosts().catch(() => []);
+  const tags = [...new Set(posts.flatMap((p) => p.tags))];
+  if (tags.length === 0) return [{ tag: "_" }];
+  return tags.map((t) => ({ tag: encodeURIComponent(t) }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -44,9 +38,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function TagPage({ params }: Props) {
   const { tag } = await params;
+  if (tag === "_") notFound();
   const decoded = decodeURIComponent(tag);
-  const posts = await fetchTagPosts(decoded);
-  if (posts === null || posts.length === 0) notFound();
+
+  const allPosts = await getAllBlogPosts().catch(() => []);
+  const posts = allPosts.filter(
+    (p) => p.tags?.map((t) => encodeURIComponent(t)).includes(tag)
+  ) as BlogPost[];
+
+  if (posts.length === 0) notFound();
 
   return (
     <>

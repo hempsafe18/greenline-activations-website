@@ -22,7 +22,7 @@ export interface BlogPost {
 
 async function fetchJson<T>(path: string): Promise<T> {
   const res = await fetch(`${BACKEND}${path}`, {
-    cache: "no-store",
+    cache: "force-cache",
   });
   if (!res.ok) {
     throw new Error(`API ${res.status} for ${path}`);

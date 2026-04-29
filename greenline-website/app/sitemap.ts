@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 import { getAllBlogPosts } from "@/lib/blog-api";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-static";
 
 const BASE = "https://greenlineactivations.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  const now = new Date("2026-04-29");
 
   const blogPosts = await getAllBlogPosts().catch(() => []);
   const blogEntries: MetadataRoute.Sitemap = blogPosts.map((p) => ({
