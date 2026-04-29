@@ -215,17 +215,31 @@ async def require_admin(user: dict = Depends(get_current_user)) -> dict:
 
 
 # ---------------- Brute-force protection ----------------
+def _client_ip(request: Request) -> str:
+    """Real client IP: prefer X-Forwarded-For (first hop) so the brute-force
+    counter is consistent across replicas behind an ingress.
+    """
+    fwd = request.headers.get("x-forwarded-for", "")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 async def _brute_force_guard(identifier: str) -> None:
     db = _db_or_raise()
     cutoff = datetime.now(timezone.utc) - timedelta(minutes=LOCKOUT_WINDOW_MIN)
     rec = await db.login_attempts.find_one({"identifier": identifier})
     if rec and rec.get("count", 0) >= LOCKOUT_THRESHOLD:
         last = rec.get("last_attempt")
-        if isinstance(last, datetime) and last >= cutoff:
-            raise HTTPException(
-                status_code=429,
-                detail=f"Too many failed login attempts. Try again in {LOCKOUT_WINDOW_MIN} minutes.",
-            )
+        # Motor returns naive datetimes; coerce to UTC-aware for comparison.
+        if isinstance(last, datetime):
+            if last.tzinfo is None:
+                last = last.replace(tzinfo=timezone.utc)
+            if last >= cutoff:
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"Too many failed login attempts. Try again in {LOCKOUT_WINDOW_MIN} minutes.",
+                )
 
 
 async def _record_failed_login(identifier: str) -> None:
@@ -247,7 +261,7 @@ async def _clear_login_attempts(identifier: str) -> None:
 async def login(payload: LoginRequest, request: Request, response: Response):
     db = _db_or_raise()
     email = payload.email.lower().strip()
-    ip = request.client.host if request.client else "unknown"
+    ip = _client_ip(request)
     identifier = f"{ip}:{email}"
 
     await _brute_force_guard(identifier)
@@ -543,8 +557,8 @@ def _slug_from_url(url: str) -> str:
 
 
 async def seed_blog_posts_from_csv(db, csv_path: Path) -> int:
-    """Seed blog posts from the CSV if the collection has fewer than 12 posts.
-    Returns the number of inserted posts.
+    """Seed blog posts from the CSV on first boot (when the collection is empty).
+    Returns the number of inserted posts. No-op if any posts already exist.
     """
     existing_count = await db.blog_posts.count_documents({})
     if existing_count >= 1:

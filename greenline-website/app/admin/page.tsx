@@ -129,6 +129,7 @@ export default function AdminDashboardPage() {
             href="/admin/posts/new"
             className="btn-canopy"
             data-testid="admin-new-post-button"
+            id="new-post-button"
           >
             + New post
           </Link>
