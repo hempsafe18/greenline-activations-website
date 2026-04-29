@@ -168,23 +168,28 @@ def _create_refresh_token(user_id: str) -> str:
 
 
 def _set_auth_cookies(response: Response, access: str, refresh: str) -> None:
-    # secure=True is required for SameSite=None on browsers, but cross-origin
-    # cookies don't work without it. For our preview/prod (HTTPS only) this is fine.
-    response.set_cookie(
-        "access_token", access,
-        httponly=True, secure=True, samesite="lax",
-        max_age=ACCESS_TOKEN_TTL_MIN * 60, path="/",
+    """Issue session cookies. SameSite + Domain are env-controlled so the same
+    code works in dev (host-only, SameSite=Lax) and prod across subdomains
+    (Domain=.example.com, SameSite=None + Secure).
+    """
+    samesite = os.environ.get("COOKIE_SAMESITE", "lax").lower()  # "lax" | "none"
+    domain = os.environ.get("COOKIE_DOMAIN") or None
+    common = dict(
+        httponly=True,
+        secure=True,
+        samesite=samesite,
+        path="/",
     )
-    response.set_cookie(
-        "refresh_token", refresh,
-        httponly=True, secure=True, samesite="lax",
-        max_age=REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60, path="/",
-    )
+    if domain:
+        common["domain"] = domain
+    response.set_cookie("access_token", access, max_age=ACCESS_TOKEN_TTL_MIN * 60, **common)
+    response.set_cookie("refresh_token", refresh, max_age=REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60, **common)
 
 
 def _clear_auth_cookies(response: Response) -> None:
-    response.delete_cookie("access_token", path="/")
-    response.delete_cookie("refresh_token", path="/")
+    domain = os.environ.get("COOKIE_DOMAIN") or None
+    response.delete_cookie("access_token", path="/", domain=domain)
+    response.delete_cookie("refresh_token", path="/", domain=domain)
 
 
 def _doc_to_post_out(doc: dict) -> dict:
@@ -394,11 +399,13 @@ async def refresh(request: Request, response: Response):
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
         access = _create_access_token(str(user["_id"]), user.get("email", ""))
-        response.set_cookie(
-            "access_token", access,
-            httponly=True, secure=True, samesite="lax",
-            max_age=ACCESS_TOKEN_TTL_MIN * 60, path="/",
-        )
+        samesite = os.environ.get("COOKIE_SAMESITE", "lax").lower()
+        domain = os.environ.get("COOKIE_DOMAIN") or None
+        kwargs = dict(httponly=True, secure=True, samesite=samesite,
+                      max_age=ACCESS_TOKEN_TTL_MIN * 60, path="/")
+        if domain:
+            kwargs["domain"] = domain
+        response.set_cookie("access_token", access, **kwargs)
         return {"ok": True}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Refresh token expired")
