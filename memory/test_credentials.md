@@ -28,6 +28,7 @@
 - `POST /api/admin/posts/{id}/publish`
 - `POST /api/admin/posts/{id}/unpublish`
 - `POST /api/admin/upload` (multipart/form-data, field `file`) → returns `{ url }` from Cloudinary
+- `POST /api/admin/posts/seo-suggest` (body `{title, body_html}`) → returns `{ meta_description, length }` (Claude Sonnet 4.5 via Universal Key)
 
 ## Initial seed
 - 12 blog posts auto-seeded from `/app/backend/seed_data/blog.csv` on first startup (when `blog_posts` collection is empty). All seeded as `published`.

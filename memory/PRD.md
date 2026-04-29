@@ -71,6 +71,7 @@ the user). All seeded as `published`.
 - ✅ Real client IP from `X-Forwarded-For` confirmed reaching the brute-force keying
 - ✅ Startup admin-seed no longer clobbers a self-changed password on restart
 - ✅ `/app/backend/.env` confirmed gitignored (`*.env` rule), Cloudinary secret safe
+- ✅ **AI SEO meta description**: `POST /api/admin/posts/seo-suggest` powered by Claude Sonnet 4.5 via the Universal Key. "✨ AI suggest" button next to the Meta description field on the editor — generates a 140-160 char description from the post body in one click. Includes a live character counter and over-limit warning.
 
 ## Known caveats
 - Cloudinary credentials live in `/app/backend/.env` — make sure that file is

@@ -127,4 +127,12 @@ export const adminApi = {
     }
     return (await res.json()) as { url: string };
   },
+  suggestSeo: (title: string, body_html: string) =>
+    jsonFetch<{ meta_description: string; length: number }>(
+      "/api/admin/posts/seo-suggest",
+      {
+        method: "POST",
+        body: JSON.stringify({ title, body_html }),
+      }
+    ),
 };

@@ -49,6 +49,7 @@ export default function PostForm({ initial, mode }: PostFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [uploadingFeatured, setUploadingFeatured] = useState(false);
   const featuredInputRef = useRef<HTMLInputElement>(null);
+  const [seoSuggesting, setSeoSuggesting] = useState(false);
 
   useEffect(() => {
     if (!slugTouched.current && title) {
@@ -112,6 +113,25 @@ export default function PostForm({ initial, mode }: PostFormProps) {
     } finally {
       setUploadingFeatured(false);
       if (featuredInputRef.current) featuredInputRef.current.value = "";
+    }
+  };
+
+  const onSuggestSeo = async () => {
+    if (!bodyHtml || bodyHtml === "<p></p>") {
+      setError("Write some body text first — the AI needs something to work with.");
+      return;
+    }
+    setSeoSuggesting(true);
+    setError(null);
+    try {
+      const { meta_description } = await adminApi.suggestSeo(title, bodyHtml);
+      setMetaDescription(meta_description);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to generate meta description"
+      );
+    } finally {
+      setSeoSuggesting(false);
     }
   };
 
@@ -346,9 +366,21 @@ export default function PostForm({ initial, mode }: PostFormProps) {
                 />
               </div>
               <div>
-                <label className="label-brutal" htmlFor="meta_description">
-                  Meta description
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="label-brutal !mb-0" htmlFor="meta_description">
+                    Meta description
+                  </label>
+                  <button
+                    type="button"
+                    onClick={onSuggestSeo}
+                    disabled={seoSuggesting}
+                    className="text-[10px] font-display font-bold uppercase tracking-wider px-2 py-1 border-2 border-ink bg-canopy hover:bg-canopy-dark hover:text-bone transition disabled:opacity-50"
+                    title="Generate from post body using Claude"
+                    data-testid="post-form-meta-suggest"
+                  >
+                    {seoSuggesting ? "Thinking…" : "✨ AI suggest"}
+                  </button>
+                </div>
                 <textarea
                   id="meta_description"
                   value={metaDescription}
@@ -357,6 +389,12 @@ export default function PostForm({ initial, mode }: PostFormProps) {
                   className="input-brutal text-sm"
                   data-testid="post-form-meta"
                 />
+                <p className="text-[11px] text-ink/50 mt-1">
+                  {metaDescription.length}/160 characters
+                  {metaDescription.length > 160 && (
+                    <span className="text-street font-bold"> · over limit</span>
+                  )}
+                </p>
               </div>
             </div>
           </aside>
