@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     rootDir: backend
-    buildCommand: pip install --extra-index-url https://d33sy5i8bnduwe.cloudfront.net/simple/ -r requirements.txt
+    buildCommand: pip uninstall -y emergentintegrations 2>/dev/null || true && pip install -r requirements.txt
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/
     envVars:
@@ -32,6 +32,17 @@ services:
         value: https://greenlineactivations.com
       - key: ALLOWED_ORIGINS
         value: https://greenlineactivations.com,https://www.greenlineactivations.com
+      # CMS admin credentials — set these in the Render dashboard
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Secret key for signing JWT tokens — set a long random string in Render dashboard
+      - key: JWT_SECRET
+        sync: false
+      # Anthropic API key for AI-assisted CMS features
+      - key: ANTHROPIC_API_KEY
+        sync: false
       # Python version Render should use
       - key: PYTHON_VERSION
         value: "3.11.9"
