@@ -1,0 +1,18 @@
+{
+  "installCommand": "cd greenline-website && npm install",
+  "buildCommand": "cd greenline-website && npm run build",
+  "outputDirectory": "greenline-website/.next",
+  "framework": "nextjs",
+  "redirects": [
+    {
+      "source": "/meetings/:path*",
+      "destination": "https://meetings.hubspot.com/greenline-activations/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/documents/:path*",
+      "destination": "https://app.hubspot.com/documents/:path*",
+      "permanent": true
+    }
+  ]
+}
