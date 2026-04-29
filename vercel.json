@@ -1,5 +1,5 @@
 {
-  "installCommand": "cd greenline-website && npm install",
+  "installCommand": "cd greenline-website && npm install --legacy-peer-deps",
   "buildCommand": "cd greenline-website && npm run build",
   "outputDirectory": "greenline-website/.next",
   "framework": "nextjs",
