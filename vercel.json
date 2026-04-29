@@ -1,4 +1,13 @@
 {
+  "buildCommand": "cd greenline-website && npm install && npm run build",
+  "outputDirectory": "greenline-website/out",
+  "installCommand": "echo 'install handled in buildCommand'",
+  "rewrites": [
+    {
+      "source": "/admin/posts/:id/edit/",
+      "destination": "/admin/posts/_/edit/"
+    }
+  ],
   "redirects": [
     {
       "source": "/meetings/:path*",
