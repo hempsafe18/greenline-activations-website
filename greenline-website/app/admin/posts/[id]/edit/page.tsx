@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use as usePromise } from "react";
+import { Suspense, useEffect, useState, use as usePromise } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 import PostForm from "@/components/admin/PostForm";
@@ -10,8 +10,7 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default function EditPostPage({ params }: Props) {
-  const { id } = usePromise(params);
+function EditInner({ id }: { id: string }) {
   const { user, loading } = useAdminAuth();
   const router = useRouter();
   const [post, setPost] = useState<AdminBlogPost | null>(null);
@@ -56,4 +55,19 @@ export default function EditPostPage({ params }: Props) {
   }
 
   return <PostForm mode="edit" initial={post!} />;
+}
+
+export default function EditPostPage({ params }: Props) {
+  const { id } = usePromise(params);
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center">
+          <p className="font-sans text-ink/60">Loading…</p>
+        </main>
+      }
+    >
+      <EditInner id={id} />
+    </Suspense>
+  );
 }

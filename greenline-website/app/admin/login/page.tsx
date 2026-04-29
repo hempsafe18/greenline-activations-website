@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAdminAuth } from "@/components/admin/AdminAuthContext";
 
-export default function AdminLoginPage() {
+function LoginInner() {
   const { user, loading, login } = useAdminAuth();
   const router = useRouter();
   const search = useSearchParams();
@@ -94,5 +94,19 @@ export default function AdminLoginPage() {
         </button>
       </form>
     </main>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center">
+          <p className="font-sans text-ink/60">Loading…</p>
+        </main>
+      }
+    >
+      <LoginInner />
+    </Suspense>
   );
 }
