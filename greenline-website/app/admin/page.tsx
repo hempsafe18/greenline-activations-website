@@ -77,6 +77,42 @@ export default function AdminDashboardPage() {
     total: posts.length,
     published: posts.filter((p) => p.status === "published").length,
     drafts: posts.filter((p) => p.status === "draft").length,
+    scheduled: posts.filter((p) => p.status === "scheduled").length,
+  };
+
+  const canPublish = user.role === "admin" || user.role === "editor";
+
+  const onBulkSeo = async () => {
+    if (
+      !window.confirm(
+        "Regenerate the meta description for ALL posts using Claude? " +
+          "This calls the LLM once per post and uses Universal Key credits."
+      )
+    )
+      return;
+    setBusyId("__bulk__");
+    try {
+      const result = await adminApi.bulkRegenerateSeo();
+      alert(
+        `Regenerated ${result.updated}/${result.total} meta descriptions.${
+          result.results.find((r) => r.error)
+            ? "\nSome posts errored — check console."
+            : ""
+        }`
+      );
+      // eslint-disable-next-line no-console
+      console.log("Bulk SEO results:", result);
+      await refresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Bulk regenerate failed");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const exportCsv = () => {
+    const url = `${process.env.NEXT_PUBLIC_BACKEND_URL ?? ""}/api/admin/export.csv`;
+    window.open(url, "_blank");
   };
 
   return (
@@ -100,6 +136,15 @@ export default function AdminDashboardPage() {
             >
               Account
             </Link>
+            {user.role === "admin" && (
+              <Link
+                href="/admin/users"
+                className="text-xs font-display font-bold uppercase tracking-wider hover:text-canopy"
+                data-testid="admin-users-link"
+              >
+                Users
+              </Link>
+            )}
             <Link
               href="/blog"
               target="_blank"
@@ -142,7 +187,39 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        {/* Toolbar: bulk actions */}
+        <div className="flex flex-wrap items-center gap-2 mb-8 p-4 bg-bone-warm border-2 border-ink">
+          <span className="eyebrow mr-2">Bulk actions:</span>
+          <button
+            type="button"
+            onClick={exportCsv}
+            className="text-[11px] font-display font-bold uppercase tracking-wider px-3 py-2 border-2 border-ink bg-bone hover:bg-canopy"
+            data-testid="admin-export-csv-button"
+          >
+            ⬇ Export CSV
+          </button>
+          {canPublish && (
+            <button
+              type="button"
+              onClick={onBulkSeo}
+              disabled={busyId === "__bulk__"}
+              className="text-[11px] font-display font-bold uppercase tracking-wider px-3 py-2 border-2 border-ink bg-canopy hover:bg-canopy-dark disabled:opacity-50"
+              data-testid="admin-bulk-seo-button"
+              title="Regenerate every meta description with Claude"
+            >
+              {busyId === "__bulk__" ? "Working… (this can take a minute)" : "✨ Regenerate ALL SEO"}
+            </button>
+          )}
+          <Link
+            href="/admin/posts/new?import=md"
+            className="text-[11px] font-display font-bold uppercase tracking-wider px-3 py-2 border-2 border-ink bg-bone hover:bg-canopy ml-auto"
+            data-testid="admin-import-md-link"
+          >
+            ⬆ Import markdown
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           <div className="card !p-5">
             <p className="eyebrow mb-1">Total</p>
             <p className="text-3xl font-display font-black" data-testid="admin-stat-total">
@@ -159,6 +236,12 @@ export default function AdminDashboardPage() {
             <p className="eyebrow mb-1 text-street">Drafts</p>
             <p className="text-3xl font-display font-black" data-testid="admin-stat-drafts">
               {counts.drafts}
+            </p>
+          </div>
+          <div className="card !p-5">
+            <p className="eyebrow mb-1">Scheduled</p>
+            <p className="text-3xl font-display font-black" data-testid="admin-stat-scheduled">
+              {counts.scheduled}
             </p>
           </div>
         </div>
@@ -231,6 +314,13 @@ export default function AdminDashboardPage() {
                       {post.status === "published" ? (
                         <span className="inline-block text-[10px] font-display font-bold uppercase tracking-[0.18em] bg-canopy text-ink border-2 border-ink px-2 py-1">
                           Published
+                        </span>
+                      ) : post.status === "scheduled" ? (
+                        <span
+                          className="inline-block text-[10px] font-display font-bold uppercase tracking-[0.18em] bg-bone-warm text-ink border-2 border-ink px-2 py-1"
+                          title={`Goes live ${post.scheduled_for}`}
+                        >
+                          ⏰ Scheduled
                         </span>
                       ) : (
                         <span className="inline-block text-[10px] font-display font-bold uppercase tracking-[0.18em] bg-street text-bone border-2 border-ink px-2 py-1">

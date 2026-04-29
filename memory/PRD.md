@@ -72,6 +72,16 @@ the user). All seeded as `published`.
 - ✅ Startup admin-seed no longer clobbers a self-changed password on restart
 - ✅ `/app/backend/.env` confirmed gitignored (`*.env` rule), Cloudinary secret safe
 - ✅ **AI SEO meta description**: `POST /api/admin/posts/seo-suggest` powered by Claude Sonnet 4.5 via the Universal Key. "✨ AI suggest" button next to the Meta description field on the editor — generates a 140-160 char description from the post body in one click. Includes a live character counter and over-limit warning.
+- ✅ **Backlog clearing pass (2026-04-29 #2)**:
+  - **Scheduled publishing**: status `scheduled` + `scheduled_for`; backend background loop promotes due posts every 60s; lazy promotion on every public read; "⏰ Schedule" sidebar in editor.
+  - **Tag pages**: `GET /api/blog/tags`, `GET /api/blog/tags/{tag}`, public route `/blog/tags/[tag]`. Post-page tag chips now link to their tag page.
+  - **Image library**: every Cloudinary upload tracked in `media` collection; "Library" button on featured-image picker opens a grid of all uploads to re-use.
+  - **Multi-author roles**: `admin / editor / author`. Author can only edit own drafts (cannot publish/schedule). Editor can publish anything. Admin can manage users at `/admin/users` (create / change role / delete; last-admin protected).
+  - **CSV bulk export**: `GET /api/admin/export.csv` — toolbar button on dashboard, mirrors the original import format.
+  - **Markdown export**: per-post download button (`/api/admin/posts/{id}/export.md`) — full YAML frontmatter + body.
+  - **Markdown import**: paste markdown into the New Post screen → creates a draft (`/admin/posts/new?import=md`).
+  - **Bulk regenerate SEO meta**: `POST /api/admin/posts/seo-regenerate-all` — dashboard button (editor+) iterates all posts through Claude.
+  - **Outline generator**: `POST /api/admin/posts/outline` — "✨ Generate outline" button on New Post; drops H2/H3 skeleton straight into the TipTap editor.
 
 ## Known caveats
 - Cloudinary credentials live in `/app/backend/.env` — make sure that file is

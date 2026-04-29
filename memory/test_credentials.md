@@ -20,15 +20,31 @@
 - `GET /api/blog/posts/{slug}` — single published post
 
 ## Admin (cookie-protected) endpoints
-- `GET  /api/admin/posts`
-- `GET  /api/admin/posts/{id}`
-- `POST /api/admin/posts`
-- `PUT  /api/admin/posts/{id}`
-- `DELETE /api/admin/posts/{id}`
-- `POST /api/admin/posts/{id}/publish`
-- `POST /api/admin/posts/{id}/unpublish`
-- `POST /api/admin/upload` (multipart/form-data, field `file`) → returns `{ url }` from Cloudinary
-- `POST /api/admin/posts/seo-suggest` (body `{title, body_html}`) → returns `{ meta_description, length }` (Claude Sonnet 4.5 via Universal Key)
+### Posts
+- `GET  /api/admin/posts` (staff) — authors see only their own
+- `GET  /api/admin/posts/{id}` (staff)
+- `POST /api/admin/posts` (staff) — authors forced to draft
+- `PUT  /api/admin/posts/{id}` (staff, ownership-checked for authors)
+- `DELETE /api/admin/posts/{id}` (staff, ownership-checked)
+- `POST /api/admin/posts/{id}/publish` (editor+)
+- `POST /api/admin/posts/{id}/unpublish` (editor+)
+- `POST /api/admin/posts/{id}/schedule` body `{scheduled_for}` (editor+)
+- `POST /api/admin/posts/seo-suggest` body `{title, body_html}`
+- `POST /api/admin/posts/outline` body `{title, audience?, tone?}`
+- `POST /api/admin/posts/seo-regenerate-all` (editor+) — bulk Claude run
+- `POST /api/admin/posts/import-markdown` body `{title, markdown, ...}` → creates draft
+- `GET  /api/admin/posts/{id}/export.md` — markdown download (frontmatter + body)
+- `GET  /api/admin/export.csv` (editor+) — bulk CSV download
+
+### Media
+- `POST /api/admin/upload` (multipart `file`) → Cloudinary, tracked in DB
+- `GET  /api/admin/media` — recent uploads (image library)
+
+### Users (admin only)
+- `GET  /api/admin/users`
+- `POST /api/admin/users` body `{email, password, name, role}`
+- `PUT  /api/admin/users/{id}` body `{name?, role?, password?}`
+- `DELETE /api/admin/users/{id}`
 
 ## Initial seed
 - 12 blog posts auto-seeded from `/app/backend/seed_data/blog.csv` on first startup (when `blog_posts` collection is empty). All seeded as `published`.

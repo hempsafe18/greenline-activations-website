@@ -624,5 +624,7 @@ async def _cms_startup() -> None:
         )
         if seeded:
             logger.info("Seeded %s blog posts from CSV", seeded)
+        # Launch background scheduler that promotes due posts every 60s.
+        asyncio.create_task(cms.scheduled_publisher_loop(db))
     except Exception:
         logger.exception("CMS startup failed")

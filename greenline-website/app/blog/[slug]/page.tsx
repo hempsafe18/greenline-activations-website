@@ -61,7 +61,14 @@ export default async function BlogPostPage({ params }: Props) {
           {post.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-5" data-testid="blog-post-tags">
               {post.tags.map((t) => (
-                <span key={t} className="tag-ink">{t}</span>
+                <Link
+                  key={t}
+                  href={`/blog/tags/${encodeURIComponent(t)}/`}
+                  className="tag-ink hover:bg-canopy hover:text-ink transition-colors"
+                  data-testid={`blog-post-tag-${t.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                  {t}
+                </Link>
               ))}
             </div>
           )}

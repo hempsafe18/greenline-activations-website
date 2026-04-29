@@ -48,6 +48,38 @@ class SeoSuggestRequest(BaseModel):
     body_html: str = Field(min_length=1)
 
 
+class OutlineRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=300)
+    audience: Optional[str] = ""
+    tone: Optional[str] = ""
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=200)
+    name: str = Field(min_length=1, max_length=120)
+    role: str = Field(default="author")  # admin | editor | author
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+    password: Optional[str] = Field(default=None, min_length=8, max_length=200)
+
+
+class MarkdownImportRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=300)
+    slug: Optional[str] = ""
+    author: Optional[str] = ""
+    publish_date: Optional[str] = ""
+    tags: List[str] = []
+    markdown: str = Field(min_length=1)
+
+
+class ScheduleRequest(BaseModel):
+    scheduled_for: str = Field(min_length=1)  # ISO datetime
+
+
 class UserOut(BaseModel):
     id: str
     email: EmailStr
@@ -65,7 +97,8 @@ class BlogPostBase(BaseModel):
     featured_image_url: Optional[str] = ""
     body_html: str = ""
     tags: List[str] = []
-    status: str = Field(default="draft")  # "draft" | "published"
+    status: str = Field(default="draft")  # "draft" | "published" | "scheduled"
+    scheduled_for: Optional[str] = ""  # ISO datetime when status="scheduled"
 
 
 class BlogPostCreate(BlogPostBase):
@@ -83,6 +116,7 @@ class BlogPostUpdate(BaseModel):
     body_html: Optional[str] = None
     tags: Optional[List[str]] = None
     status: Optional[str] = None
+    scheduled_for: Optional[str] = None
 
 
 class BlogPostOut(BlogPostBase):
@@ -166,6 +200,8 @@ def _doc_to_post_out(doc: dict) -> dict:
         "body_html": doc.get("body_html", ""),
         "tags": doc.get("tags", []) or [],
         "status": doc.get("status", "draft"),
+        "scheduled_for": doc.get("scheduled_for", "") or "",
+        "created_by": doc.get("created_by", "") or "",
         "created_at": doc.get("created_at", ""),
         "updated_at": doc.get("updated_at", ""),
     }
@@ -223,6 +259,40 @@ async def require_admin(user: dict = Depends(get_current_user)) -> dict:
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     return user
+
+
+# Roles
+ROLES = ("admin", "editor", "author")
+
+
+def _is_admin(user: dict) -> bool:
+    return user.get("role") == "admin"
+
+
+def _can_publish(user: dict) -> bool:
+    return user.get("role") in ("admin", "editor")
+
+
+async def require_staff(user: dict = Depends(get_current_user)) -> dict:
+    """Any signed-in CMS user (admin/editor/author)."""
+    if user.get("role") not in ROLES:
+        raise HTTPException(status_code=403, detail="Staff access required")
+    return user
+
+
+async def require_publisher(user: dict = Depends(get_current_user)) -> dict:
+    """Editor or admin."""
+    if user.get("role") not in ("admin", "editor"):
+        raise HTTPException(status_code=403, detail="Editor or admin access required")
+    return user
+
+
+async def _assert_can_mutate_post(user: dict, post_doc: dict) -> None:
+    """Authors can only mutate posts they created. Editors/admins can mutate anything."""
+    if _can_publish(user):
+        return
+    if str(post_doc.get("created_by", "")) != str(user.get("_id", "")):
+        raise HTTPException(status_code=403, detail="You can only modify your own posts")
 
 
 # ---------------- Brute-force protection ----------------
@@ -370,10 +440,23 @@ async def change_password(
     return {"ok": True}
 
 
+async def _promote_due_scheduled(db) -> int:
+    """Flip any 'scheduled' posts whose `scheduled_for` is past to 'published'.
+    Returns the number of promotions. Cheap; safe to call from any read path.
+    """
+    now_iso = datetime.now(timezone.utc).isoformat()
+    result = await db.blog_posts.update_many(
+        {"status": "scheduled", "scheduled_for": {"$lte": now_iso, "$ne": ""}},
+        {"$set": {"status": "published", "updated_at": now_iso}},
+    )
+    return result.modified_count
+
+
 # ---------------- Public blog routes ----------------
 @router.get("/blog/posts")
 async def list_published_posts():
     db = _db_or_raise()
+    await _promote_due_scheduled(db)
     cursor = db.blog_posts.find({"status": "published"}).sort("publish_date", -1)
     docs = await cursor.to_list(length=500)
     return {"posts": [_doc_to_post_out(d) for d in docs]}
@@ -382,23 +465,59 @@ async def list_published_posts():
 @router.get("/blog/posts/{slug}")
 async def get_published_post(slug: str):
     db = _db_or_raise()
+    await _promote_due_scheduled(db)
     doc = await db.blog_posts.find_one({"slug": slug, "status": "published"})
     if not doc:
         raise HTTPException(status_code=404, detail="Post not found")
     return _doc_to_post_out(doc)
 
 
+@router.get("/blog/tags")
+async def list_tags():
+    """Public — distinct tags across published posts, with post counts."""
+    db = _db_or_raise()
+    await _promote_due_scheduled(db)
+    pipeline = [
+        {"$match": {"status": "published"}},
+        {"$unwind": "$tags"},
+        {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1, "_id": 1}},
+    ]
+    cursor = db.blog_posts.aggregate(pipeline)
+    items = []
+    async for row in cursor:
+        items.append({"tag": row["_id"], "count": row["count"]})
+    return {"tags": items}
+
+
+@router.get("/blog/tags/{tag}")
+async def list_posts_by_tag(tag: str):
+    """Public — published posts that carry the given tag (case-insensitive)."""
+    db = _db_or_raise()
+    await _promote_due_scheduled(db)
+    cursor = db.blog_posts.find(
+        {
+            "status": "published",
+            "tags": {"$regex": f"^{re.escape(tag)}$", "$options": "i"},
+        }
+    ).sort("publish_date", -1)
+    docs = await cursor.to_list(length=500)
+    return {"tag": tag, "posts": [_doc_to_post_out(d) for d in docs]}
+
+
 # ---------------- Admin blog routes ----------------
 @router.get("/admin/posts")
-async def list_all_posts(_: dict = Depends(require_admin)):
+async def list_all_posts(user: dict = Depends(require_staff)):
     db = _db_or_raise()
-    cursor = db.blog_posts.find({}).sort("updated_at", -1)
+    # Authors only see their own posts; editors/admins see everything.
+    query: dict = {} if _can_publish(user) else {"created_by": str(user["_id"])}
+    cursor = db.blog_posts.find(query).sort("updated_at", -1)
     docs = await cursor.to_list(length=1000)
     return {"posts": [_doc_to_post_out(d) for d in docs]}
 
 
 @router.get("/admin/posts/{post_id}")
-async def get_post_admin(post_id: str, _: dict = Depends(require_admin)):
+async def get_post_admin(post_id: str, user: dict = Depends(require_staff)):
     db = _db_or_raise()
     try:
         oid = ObjectId(post_id)
@@ -407,17 +526,22 @@ async def get_post_admin(post_id: str, _: dict = Depends(require_admin)):
     doc = await db.blog_posts.find_one({"_id": oid})
     if not doc:
         raise HTTPException(status_code=404, detail="Post not found")
+    await _assert_can_mutate_post(user, doc)
     return _doc_to_post_out(doc)
 
 
 @router.post("/admin/posts", status_code=201)
-async def create_post(payload: BlogPostCreate, user: dict = Depends(require_admin)):
+async def create_post(payload: BlogPostCreate, user: dict = Depends(require_staff)):
     db = _db_or_raise()
     slug = _slugify(payload.slug or payload.title)
     if await db.blog_posts.find_one({"slug": slug}):
         raise HTTPException(status_code=409, detail="A post with this slug already exists")
-    if payload.status not in ("draft", "published"):
-        raise HTTPException(status_code=400, detail="status must be 'draft' or 'published'")
+    if payload.status not in ("draft", "published", "scheduled"):
+        raise HTTPException(status_code=400, detail="status must be 'draft', 'published', or 'scheduled'")
+    # Authors can't publish or schedule directly — force draft.
+    requested_status = payload.status
+    if not _can_publish(user) and requested_status != "draft":
+        requested_status = "draft"
 
     now = datetime.now(timezone.utc).isoformat()
     doc = {
@@ -430,8 +554,9 @@ async def create_post(payload: BlogPostCreate, user: dict = Depends(require_admi
         "featured_image_url": (payload.featured_image_url or "").strip(),
         "body_html": payload.body_html or "",
         "tags": [t.strip() for t in (payload.tags or []) if t.strip()],
-        "status": payload.status,
-        "created_by": user["_id"],
+        "status": requested_status,
+        "scheduled_for": (payload.scheduled_for or "").strip(),
+        "created_by": str(user["_id"]),
         "created_at": now,
         "updated_at": now,
     }
@@ -441,7 +566,7 @@ async def create_post(payload: BlogPostCreate, user: dict = Depends(require_admi
 
 
 @router.put("/admin/posts/{post_id}")
-async def update_post(post_id: str, payload: BlogPostUpdate, _: dict = Depends(require_admin)):
+async def update_post(post_id: str, payload: BlogPostUpdate, user: dict = Depends(require_staff)):
     db = _db_or_raise()
     try:
         oid = ObjectId(post_id)
@@ -451,6 +576,7 @@ async def update_post(post_id: str, payload: BlogPostUpdate, _: dict = Depends(r
     existing = await db.blog_posts.find_one({"_id": oid})
     if not existing:
         raise HTTPException(status_code=404, detail="Post not found")
+    await _assert_can_mutate_post(user, existing)
 
     update: dict = {}
     data = payload.model_dump(exclude_unset=True)
@@ -477,10 +603,16 @@ async def update_post(post_id: str, payload: BlogPostUpdate, _: dict = Depends(r
         update["body_html"] = data["body_html"] or ""
     if "tags" in data:
         update["tags"] = [t.strip() for t in (data["tags"] or []) if t.strip()]
+    if "scheduled_for" in data:
+        update["scheduled_for"] = (data["scheduled_for"] or "").strip()
     if "status" in data and data["status"]:
-        if data["status"] not in ("draft", "published"):
-            raise HTTPException(status_code=400, detail="status must be 'draft' or 'published'")
-        update["status"] = data["status"]
+        if data["status"] not in ("draft", "published", "scheduled"):
+            raise HTTPException(status_code=400, detail="status must be 'draft', 'published', or 'scheduled'")
+        # Authors can't move to published or scheduled.
+        new_status = data["status"]
+        if not _can_publish(user) and new_status != "draft":
+            raise HTTPException(status_code=403, detail="Only editors/admins can publish or schedule posts")
+        update["status"] = new_status
 
     update["updated_at"] = datetime.now(timezone.utc).isoformat()
     await db.blog_posts.update_one({"_id": oid}, {"$set": update})
@@ -489,20 +621,22 @@ async def update_post(post_id: str, payload: BlogPostUpdate, _: dict = Depends(r
 
 
 @router.delete("/admin/posts/{post_id}")
-async def delete_post(post_id: str, _: dict = Depends(require_admin)):
+async def delete_post(post_id: str, user: dict = Depends(require_staff)):
     db = _db_or_raise()
     try:
         oid = ObjectId(post_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid post id")
-    result = await db.blog_posts.delete_one({"_id": oid})
-    if result.deleted_count == 0:
+    existing = await db.blog_posts.find_one({"_id": oid})
+    if not existing:
         raise HTTPException(status_code=404, detail="Post not found")
+    await _assert_can_mutate_post(user, existing)
+    await db.blog_posts.delete_one({"_id": oid})
     return {"ok": True}
 
 
 @router.post("/admin/posts/{post_id}/publish")
-async def publish_post(post_id: str, _: dict = Depends(require_admin)):
+async def publish_post(post_id: str, _: dict = Depends(require_publisher)):
     db = _db_or_raise()
     try:
         oid = ObjectId(post_id)
@@ -510,7 +644,7 @@ async def publish_post(post_id: str, _: dict = Depends(require_admin)):
         raise HTTPException(status_code=400, detail="Invalid post id")
     now = datetime.now(timezone.utc).isoformat()
     result = await db.blog_posts.update_one(
-        {"_id": oid}, {"$set": {"status": "published", "updated_at": now}}
+        {"_id": oid}, {"$set": {"status": "published", "scheduled_for": "", "updated_at": now}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -519,7 +653,7 @@ async def publish_post(post_id: str, _: dict = Depends(require_admin)):
 
 
 @router.post("/admin/posts/{post_id}/unpublish")
-async def unpublish_post(post_id: str, _: dict = Depends(require_admin)):
+async def unpublish_post(post_id: str, _: dict = Depends(require_publisher)):
     db = _db_or_raise()
     try:
         oid = ObjectId(post_id)
@@ -527,7 +661,7 @@ async def unpublish_post(post_id: str, _: dict = Depends(require_admin)):
         raise HTTPException(status_code=400, detail="Invalid post id")
     now = datetime.now(timezone.utc).isoformat()
     result = await db.blog_posts.update_one(
-        {"_id": oid}, {"$set": {"status": "draft", "updated_at": now}}
+        {"_id": oid}, {"$set": {"status": "draft", "scheduled_for": "", "updated_at": now}}
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -535,29 +669,94 @@ async def unpublish_post(post_id: str, _: dict = Depends(require_admin)):
     return _doc_to_post_out(doc)
 
 
-# ---------------- Cloudinary upload ----------------
+@router.post("/admin/posts/{post_id}/schedule")
+async def schedule_post(post_id: str, payload: ScheduleRequest, _: dict = Depends(require_publisher)):
+    db = _db_or_raise()
+    try:
+        oid = ObjectId(post_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid post id")
+    # Validate ISO datetime — accept "YYYY-MM-DDTHH:MM" or full ISO.
+    raw = payload.scheduled_for.strip()
+    try:
+        # Allow "YYYY-MM-DDTHH:MM" by appending seconds when needed.
+        candidate = raw if "T" in raw else raw + "T00:00:00"
+        if len(candidate) == 16:  # YYYY-MM-DDTHH:MM
+            candidate += ":00"
+        dt = datetime.fromisoformat(candidate.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid scheduled_for datetime (use ISO 8601)")
+    if dt <= datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="scheduled_for must be in the future")
+
+    now = datetime.now(timezone.utc).isoformat()
+    result = await db.blog_posts.update_one(
+        {"_id": oid},
+        {"$set": {
+            "status": "scheduled",
+            "scheduled_for": dt.isoformat(),
+            "updated_at": now,
+        }},
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+    doc = await db.blog_posts.find_one({"_id": oid})
+    return _doc_to_post_out(doc)
+
+
+# ---------------- Cloudinary upload + media library ----------------
 @router.post("/admin/upload")
-async def upload_image(file: UploadFile = File(...), _: dict = Depends(require_admin)):
+async def upload_image(file: UploadFile = File(...), user: dict = Depends(require_staff)):
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image uploads are allowed")
     contents = await file.read()
     if len(contents) > 10 * 1024 * 1024:
         raise HTTPException(status_code=413, detail="File too large (max 10MB)")
     try:
-        result = cloudinary.uploader.upload(
-            contents,
-            folder="posts",
-            resource_type="image",
-        )
+        result = cloudinary.uploader.upload(contents, folder="posts", resource_type="image")
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Cloudinary upload failed: {e}")
-    return {
+    db = _db_or_raise()
+    media_doc = {
         "url": result.get("secure_url"),
         "public_id": result.get("public_id"),
         "width": result.get("width"),
         "height": result.get("height"),
         "format": result.get("format"),
+        "bytes": result.get("bytes"),
+        "original_filename": file.filename or "",
+        "uploaded_by": str(user["_id"]),
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
+    await db.media.insert_one(media_doc)
+    return {
+        "url": media_doc["url"],
+        "public_id": media_doc["public_id"],
+        "width": media_doc["width"],
+        "height": media_doc["height"],
+        "format": media_doc["format"],
+    }
+
+
+@router.get("/admin/media")
+async def list_media(_: dict = Depends(require_staff)):
+    db = _db_or_raise()
+    cursor = db.media.find({}).sort("created_at", -1).limit(200)
+    items = []
+    async for d in cursor:
+        items.append({
+            "id": str(d["_id"]),
+            "url": d.get("url"),
+            "public_id": d.get("public_id"),
+            "width": d.get("width"),
+            "height": d.get("height"),
+            "format": d.get("format"),
+            "original_filename": d.get("original_filename", ""),
+            "created_at": d.get("created_at", ""),
+        })
+    return {"items": items}
 
 
 # ---------------- AI: SEO meta description ----------------
@@ -578,7 +777,7 @@ def _strip_html(html: str) -> str:
 
 
 @router.post("/admin/posts/seo-suggest")
-async def seo_suggest(payload: SeoSuggestRequest, _: dict = Depends(require_admin)):
+async def seo_suggest(payload: SeoSuggestRequest, _: dict = Depends(require_staff)):
     """Return an SEO meta description (≤160 chars) generated by Claude
     from the post title + body. Uses the Emergent Universal Key.
     """
@@ -632,12 +831,347 @@ async def seo_suggest(payload: SeoSuggestRequest, _: dict = Depends(require_admi
     return {"meta_description": text, "length": len(text)}
 
 
+# ---------------- AI: post outline generator ----------------
+@router.post("/admin/posts/outline")
+async def generate_outline(payload: OutlineRequest, _: dict = Depends(require_staff)):
+    """Generate a structured H2/H3 outline (HTML) from a working title.
+    Returns body_html ready to drop into the TipTap editor.
+    """
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="LLM key not configured")
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"LLM library unavailable: {e}")
+
+    audience = (payload.audience or "B2B brand operators in CPG, hemp, and functional beverage").strip()[:240]
+    tone = (payload.tone or "direct, expert, no fluff, Greenline Activations field-marketing voice").strip()[:240]
+
+    system = (
+        "You are an experienced B2B field-marketing editor. Given a working post "
+        "title, return a tight outline as clean HTML — only <h2>, <h3>, <p>, <ul>, <li> tags. "
+        "No <html>/<body> wrapper, no inline styles, no markdown. "
+        "Structure: a 1-paragraph hook (<p>), then 4-6 <h2> sections, each with one short "
+        "<p> brief and an optional <ul> of 2-4 bullet talking points. End with a closing "
+        "<h2>The takeaway</h2> + <p>. Skip emoji and rhetorical questions."
+    )
+    prompt = (
+        f"Working title: {payload.title.strip()}\n"
+        f"Target audience: {audience}\n"
+        f"Tone: {tone}\n\n"
+        "Write the outline now."
+    )
+    try:
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"outline-{uuid.uuid4().hex[:8]}",
+            system_message=system,
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+        response = await chat.send_message(UserMessage(text=prompt))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"LLM call failed: {e}")
+
+    body_html = (response or "").strip()
+    # Strip code-fence wrappers if Claude wrapped in ```html blocks.
+    body_html = re.sub(r"^```(?:html)?\s*", "", body_html)
+    body_html = re.sub(r"\s*```$", "", body_html)
+    return {"body_html": body_html}
+
+
+@router.post("/admin/posts/seo-regenerate-all")
+async def seo_regenerate_all(_: dict = Depends(require_publisher)):
+    """Regenerate meta descriptions for ALL posts via Claude. This costs $$ —
+    use sparingly. Returns a per-post result list.
+    """
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="LLM key not configured")
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"LLM library unavailable: {e}")
+
+    db = _db_or_raise()
+    cursor = db.blog_posts.find({}).sort("publish_date", -1)
+    docs = await cursor.to_list(length=1000)
+    results = []
+    system = (
+        "You write tight SEO meta descriptions for B2B field-marketing blog posts. "
+        "Output exactly one meta description, 140-160 characters, no quotes, "
+        "plain text only — no markdown, no emoji."
+    )
+    for d in docs:
+        title = (d.get("title") or "")[:240]
+        body_text = _strip_html(d.get("body_html", ""))[:4000]
+        if not body_text:
+            results.append({"id": str(d["_id"]), "slug": d.get("slug"), "skipped": "empty body"})
+            continue
+        try:
+            chat = LlmChat(
+                api_key=api_key,
+                session_id=f"bulk-seo-{uuid.uuid4().hex[:8]}",
+                system_message=system,
+            ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+            resp = await chat.send_message(
+                UserMessage(text=f"Title: {title}\n\nBody:\n{body_text}\n\nWrite the meta description.")
+            )
+            meta = (resp or "").strip().strip('"').strip("'")
+            if len(meta) > 160:
+                cut = meta[:160]
+                sp = cut.rfind(" ")
+                meta = cut[:sp] if sp > 120 else cut
+            await db.blog_posts.update_one(
+                {"_id": d["_id"]},
+                {"$set": {"meta_description": meta, "updated_at": datetime.now(timezone.utc).isoformat()}},
+            )
+            results.append({"id": str(d["_id"]), "slug": d.get("slug"), "meta": meta, "length": len(meta)})
+        except Exception as e:
+            results.append({"id": str(d["_id"]), "slug": d.get("slug"), "error": str(e)[:200]})
+    return {"updated": sum(1 for r in results if "meta" in r), "total": len(results), "results": results}
+
+
+# ---------------- User management (admin only) ----------------
+def _doc_to_user_out(doc: dict) -> dict:
+    return {
+        "id": str(doc["_id"]),
+        "email": doc.get("email", ""),
+        "name": doc.get("name", ""),
+        "role": doc.get("role", "author"),
+        "created_at": doc.get("created_at", ""),
+    }
+
+
+@router.get("/admin/users")
+async def list_users(_: dict = Depends(require_admin)):
+    db = _db_or_raise()
+    cursor = db.users.find({}).sort("created_at", 1)
+    docs = await cursor.to_list(length=200)
+    return {"users": [_doc_to_user_out(d) for d in docs]}
+
+
+@router.post("/admin/users", status_code=201)
+async def create_user(payload: UserCreate, _: dict = Depends(require_admin)):
+    db = _db_or_raise()
+    if payload.role not in ROLES:
+        raise HTTPException(status_code=400, detail=f"role must be one of {ROLES}")
+    email = payload.email.lower().strip()
+    if await db.users.find_one({"email": email}):
+        raise HTTPException(status_code=409, detail="A user with this email already exists")
+    doc = {
+        "email": email,
+        "password_hash": _hash_password(payload.password),
+        "name": payload.name.strip(),
+        "role": payload.role,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    result = await db.users.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return _doc_to_user_out(doc)
+
+
+@router.put("/admin/users/{user_id}")
+async def update_user(user_id: str, payload: UserUpdate, current: dict = Depends(require_admin)):
+    db = _db_or_raise()
+    try:
+        oid = ObjectId(user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid user id")
+    target = await db.users.find_one({"_id": oid})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    update: dict = {}
+    data = payload.model_dump(exclude_unset=True)
+    if "name" in data and data["name"]:
+        update["name"] = data["name"].strip()
+    if "password" in data and data["password"]:
+        update["password_hash"] = _hash_password(data["password"])
+        update["password_changed_at"] = datetime.now(timezone.utc).isoformat()
+    if "role" in data and data["role"]:
+        if data["role"] not in ROLES:
+            raise HTTPException(status_code=400, detail=f"role must be one of {ROLES}")
+        # Don't allow demoting the last admin.
+        if target.get("role") == "admin" and data["role"] != "admin":
+            admins = await db.users.count_documents({"role": "admin"})
+            if admins <= 1:
+                raise HTTPException(status_code=400, detail="Cannot demote the last admin")
+        update["role"] = data["role"]
+
+    if not update:
+        return _doc_to_user_out(target)
+    await db.users.update_one({"_id": oid}, {"$set": update})
+    fresh = await db.users.find_one({"_id": oid})
+    return _doc_to_user_out(fresh)
+
+
+@router.delete("/admin/users/{user_id}")
+async def delete_user(user_id: str, current: dict = Depends(require_admin)):
+    db = _db_or_raise()
+    try:
+        oid = ObjectId(user_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid user id")
+    if str(oid) == str(current["_id"]):
+        raise HTTPException(status_code=400, detail="You can't delete your own account")
+    target = await db.users.find_one({"_id": oid})
+    if not target:
+        raise HTTPException(status_code=404, detail="User not found")
+    if target.get("role") == "admin":
+        admins = await db.users.count_documents({"role": "admin"})
+        if admins <= 1:
+            raise HTTPException(status_code=400, detail="Cannot delete the last admin")
+    await db.users.delete_one({"_id": oid})
+    return {"ok": True}
+
+
+# ---------------- Export / Import ----------------
+@router.get("/admin/export.csv")
+async def export_csv(_: dict = Depends(require_publisher)):
+    """Download all posts as a CSV (mirrors the original import shape)."""
+    from fastapi.responses import StreamingResponse
+    db = _db_or_raise()
+    cursor = db.blog_posts.find({}).sort("publish_date", -1)
+    docs = await cursor.to_list(length=2000)
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow([
+        "POST_URL", "TITLE", "SEO_TITLE", "PUBLISH_DATE", "AUTHOR",
+        "META_DESCRIPTION", "FEATURED_IMAGE", "POST_BODY", "TAGS", "STATUS",
+    ])
+    for d in docs:
+        slug = d.get("slug", "")
+        writer.writerow([
+            f"/blog/{slug}",
+            d.get("title", ""),
+            d.get("seo_title", ""),
+            d.get("publish_date", ""),
+            d.get("author", ""),
+            d.get("meta_description", ""),
+            d.get("featured_image_url", ""),
+            d.get("body_html", ""),
+            ", ".join(d.get("tags", []) or []),
+            d.get("status", ""),
+        ])
+    csv_bytes = buf.getvalue().encode("utf-8")
+    filename = f"greenline-blog-{datetime.now(timezone.utc).strftime('%Y%m%d')}.csv"
+    return StreamingResponse(
+        io.BytesIO(csv_bytes),
+        media_type="text/csv",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get("/admin/posts/{post_id}/export.md")
+async def export_post_markdown(post_id: str, user: dict = Depends(require_staff)):
+    """Download a single post as Markdown with YAML frontmatter."""
+    from fastapi.responses import Response as PlainResponse
+    from markdownify import markdownify
+    db = _db_or_raise()
+    try:
+        oid = ObjectId(post_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid post id")
+    doc = await db.blog_posts.find_one({"_id": oid})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Post not found")
+    await _assert_can_mutate_post(user, doc)
+
+    md_body = markdownify(doc.get("body_html", "") or "", heading_style="ATX").strip()
+    front = [
+        "---",
+        f'title: "{(doc.get("title") or "").replace(chr(34), chr(39))}"',
+        f'slug: {doc.get("slug", "")}',
+        f'author: {doc.get("author", "")}',
+        f'publish_date: {doc.get("publish_date", "")}',
+        f'status: {doc.get("status", "")}',
+        f'featured_image: {doc.get("featured_image_url", "")}',
+        f'tags: [{", ".join(doc.get("tags", []) or [])}]',
+        f'meta_description: "{(doc.get("meta_description") or "").replace(chr(34), chr(39))}"',
+        "---",
+        "",
+        md_body,
+        "",
+    ]
+    md = "\n".join(front)
+    filename = f"{doc.get('slug', 'post')}.md"
+    return PlainResponse(
+        content=md,
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.post("/admin/posts/import-markdown", status_code=201)
+async def import_markdown_post(payload: MarkdownImportRequest, user: dict = Depends(require_staff)):
+    """Create a draft post from a markdown body. Authors save as draft;
+    editors/admins can promote afterward.
+    """
+    import markdown as md_lib
+    db = _db_or_raise()
+    slug = _slugify(payload.slug or payload.title)
+    if await db.blog_posts.find_one({"slug": slug}):
+        raise HTTPException(status_code=409, detail="A post with this slug already exists")
+
+    body_html = md_lib.markdown(
+        payload.markdown,
+        extensions=["extra", "sane_lists", "smarty"],
+    )
+    now = datetime.now(timezone.utc).isoformat()
+    publish_date = (payload.publish_date or "").strip() or datetime.now(timezone.utc).date().isoformat()
+    doc = {
+        "title": payload.title.strip(),
+        "slug": slug,
+        "seo_title": "",
+        "meta_description": "",
+        "author": (payload.author or user.get("name") or "Greenline").strip(),
+        "publish_date": publish_date,
+        "featured_image_url": "",
+        "body_html": body_html,
+        "tags": [t.strip() for t in (payload.tags or []) if t.strip()],
+        "status": "draft",
+        "scheduled_for": "",
+        "created_by": str(user["_id"]),
+        "created_at": now,
+        "updated_at": now,
+    }
+    result = await db.blog_posts.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return _doc_to_post_out(doc)
+
+
+# ---------------- Scheduled-publish background task ----------------
+async def scheduled_publisher_loop(db, interval_seconds: int = 60) -> None:
+    """Background task that promotes scheduled posts whose time has come.
+    Started once from server.py on app startup.
+    """
+    import asyncio as _asyncio
+    while True:
+        try:
+            promoted = await _promote_due_scheduled(db)
+            if promoted:
+                # Best-effort log.
+                import logging as _logging
+                _logging.getLogger("greenline").info("Promoted %s scheduled post(s) to published", promoted)
+        except Exception:
+            import logging as _logging
+            _logging.getLogger("greenline").exception("scheduled_publisher_loop error")
+        await _asyncio.sleep(interval_seconds)
+
+
+
 # ---------------- Startup: indexes, admin seed, blog seed ----------------
 async def ensure_indexes(db) -> None:
     await db.users.create_index("email", unique=True)
+    await db.users.create_index("role")
     await db.blog_posts.create_index("slug", unique=True)
     await db.blog_posts.create_index("status")
     await db.blog_posts.create_index([("publish_date", -1)])
+    await db.blog_posts.create_index("tags")
+    await db.blog_posts.create_index("scheduled_for")
+    await db.blog_posts.create_index("created_by")
+    await db.media.create_index([("created_at", -1)])
     await db.login_attempts.create_index("identifier")
 
 

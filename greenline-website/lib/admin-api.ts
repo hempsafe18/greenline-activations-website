@@ -24,9 +24,30 @@ export interface AdminBlogPost {
   featured_image_url: string;
   body_html: string;
   tags: string[];
-  status: "draft" | "published";
+  status: "draft" | "published" | "scheduled";
+  scheduled_for: string;
+  created_by: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface AdminUserRecord {
+  id: string;
+  email: string;
+  name: string;
+  role: "admin" | "editor" | "author";
+  created_at: string;
+}
+
+export interface MediaItem {
+  id: string;
+  url: string;
+  public_id: string;
+  width: number;
+  height: number;
+  format: string;
+  original_filename: string;
+  created_at: string;
 }
 
 export interface PostInput {
@@ -39,7 +60,8 @@ export interface PostInput {
   featured_image_url?: string;
   body_html: string;
   tags: string[];
-  status: "draft" | "published";
+  status: "draft" | "published" | "scheduled";
+  scheduled_for?: string;
 }
 
 async function jsonFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -135,4 +157,48 @@ export const adminApi = {
         body: JSON.stringify({ title, body_html }),
       }
     ),
+  generateOutline: (title: string, audience?: string, tone?: string) =>
+    jsonFetch<{ body_html: string }>("/api/admin/posts/outline", {
+      method: "POST",
+      body: JSON.stringify({ title, audience: audience ?? "", tone: tone ?? "" }),
+    }),
+  schedulePost: (id: string, scheduled_for: string) =>
+    jsonFetch<AdminBlogPost>(`/api/admin/posts/${id}/schedule`, {
+      method: "POST",
+      body: JSON.stringify({ scheduled_for }),
+    }),
+  bulkRegenerateSeo: () =>
+    jsonFetch<{
+      updated: number;
+      total: number;
+      results: Array<{ id: string; slug: string; meta?: string; error?: string; skipped?: string }>;
+    }>("/api/admin/posts/seo-regenerate-all", { method: "POST" }),
+  listMedia: () =>
+    jsonFetch<{ items: MediaItem[] }>("/api/admin/media"),
+  importMarkdown: (data: {
+    title: string;
+    slug?: string;
+    author?: string;
+    publish_date?: string;
+    tags?: string[];
+    markdown: string;
+  }) =>
+    jsonFetch<AdminBlogPost>("/api/admin/posts/import-markdown", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  // User management (admin-only)
+  listUsers: () => jsonFetch<{ users: AdminUserRecord[] }>("/api/admin/users"),
+  createUser: (data: { email: string; password: string; name: string; role: string }) =>
+    jsonFetch<AdminUserRecord>("/api/admin/users", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateUser: (id: string, data: { name?: string; role?: string; password?: string }) =>
+    jsonFetch<AdminUserRecord>(`/api/admin/users/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+  deleteUser: (id: string) =>
+    jsonFetch<{ ok: true }>(`/api/admin/users/${id}`, { method: "DELETE" }),
 };
