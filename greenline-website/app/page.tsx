@@ -64,8 +64,8 @@ const CHANNELS = [
     body: "The highest-density channel for hemp and THC drinks. Ambassadors trained on cross-category retail dynamics.",
   },
   {
-    name: "Liquor Stores & Package Stores",
-    body: "High-volume adult beverage accounts. Staff trained in alcohol-adjacent compliance and on-premise regulations.",
+    name: "Package Stores & Specialty Retailers",
+    body: "A growing retail channel for hemp and functional beverages. Ambassadors trained to represent your brand in licensed retail environments.",
   },
   {
     name: "Natural Grocers & Health Retailers",
@@ -130,7 +130,7 @@ export default function HomePage() {
               </h1>
               <p className="mt-6 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">
                 Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to smoke shops,
-                liquor stores, and festivals across Florida. Pick a tier. Checkout online. Convert.
+                specialty retailers, and festivals across Florida. Pick a tier. Checkout online. Convert.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/book/" className="btn-street text-base" data-testid="hero-cta-primary">
@@ -317,13 +317,13 @@ export default function HomePage() {
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[360px]">
               <Image
                 src="/images/senorita-sampling-event-setup.jpg"
-                alt="Brand ambassador at Señorita beverage sampling event in Florida liquor store"
+                alt="Brand ambassador at Señorita beverage sampling event in Florida specialty retailer"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
               />
               <div className="absolute bottom-3 left-3 bg-canopy text-ink px-3 py-1 text-[11px] font-display font-black uppercase tracking-wider">
-                Liquor Store · Beverage Demo
+                Specialty Retail · Beverage Demo
               </div>
             </div>
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[360px]">
@@ -424,7 +424,7 @@ export default function HomePage() {
             Trusted by Leading Hemp &amp; Adult Beverage Brands
           </h2>
           <p className="max-w-2xl mx-auto text-ink/70 leading-relaxed">
-            From emerging hemp startups to established spirits labels, Greenline&apos;s productized model works because it scales without compromise. Every activation gets the same certified staff, the same tracking rigor, and the same 50-point recap — whether it&apos;s your first event or your fiftieth.
+            From emerging hemp startups to established functional beverage brands, Greenline&apos;s productized model works because it scales without compromise. Every activation gets the same certified staff, the same tracking rigor, and the same 50-point recap — whether it&apos;s your first event or your fiftieth.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link href="/services/brand-activation/" className="btn-ghost text-sm">

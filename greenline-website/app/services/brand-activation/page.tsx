@@ -44,7 +44,7 @@ const SERVICE_SCHEMA = {
 const SERVICES = [
   {
     title: "Retail Sampling Activations",
-    body: "In-store product demonstrations at smoke shops, liquor stores, and natural grocers. The core Greenline service — high-frequency, Tally-tracked, 50-point recap included.",
+    body: "In-store product demonstrations at smoke shops, specialty retailers, and natural grocers. The core Greenline service — high-frequency, Tally-tracked, 50-point recap included.",
   },
   {
     title: "Festival & Event Sampling",
@@ -61,10 +61,6 @@ const SERVICES = [
   {
     title: "Street Team & Mobile Sampling",
     body: "Mobile activations that follow your distribution footprint. Flexible, fast-to-deploy, and fully tracked.",
-  },
-  {
-    title: "On-Premise Alcohol Demos",
-    body: "Licensed, compliant on-premise demonstrations for spirits, RTD cocktails, and wine brands at bars and restaurants.",
   },
 ];
 
@@ -249,7 +245,6 @@ export default function BrandActivationPage() {
             {[
               { label: "Hemp & CBD Beverages", href: "/services/hemp-thc-beverage-activation/" },
               { label: "THC / Delta-8 / Delta-9 Drinks", href: "/services/hemp-thc-beverage-activation/" },
-              { label: "Spirits, Wine & RTD Cocktails", href: "/services/alcohol-beverage-activation/" },
               { label: "Functional & Better-For-You Beverages", href: "/services/functional-beverage-activation/" },
             ].map((item) => (
               <Link

@@ -36,7 +36,7 @@ const pilotIncludes = [
 
 const pilotFor = [
   "Brands entering Florida for the first time",
-  "SKUs launching in a new channel (on-premise, grocery, convenience)",
+  "SKUs launching in a new channel (smoke shops, grocery, convenience)",
   "Products that need sampling to convert",
   "Brands testing pricing or positioning in market",
   "Companies that want proof before a full field commitment",

@@ -23,12 +23,12 @@ const CITIES: CityData[] = [
     region: "Miami / Dade County",
     titleTag: "Brand Activation Staff Miami | Hemp & Beverage Specialists | Greenline Activations",
     metaDescription:
-      "Hire HempSafe™-certified brand activation staff in Miami. Greenline Activations deploys trained ambassadors to Miami smoke shops, liquor stores, and festivals. No contracts. Book online.",
+      "Hire HempSafe™-certified brand activation staff in Miami. Greenline Activations deploys trained ambassadors to Miami smoke shops, specialty retailers, and festivals. No contracts. Book online.",
     context:
       "Miami is Florida's largest consumer market and a primary growth channel for hemp and functional beverages. High tourist density, diverse demographics, and a concentrated smoke shop and specialty retail footprint make Miami a priority activation market.",
     primaryRetailChannels: [
       "Smoke shops in Wynwood and Little Havana",
-      "Liquor stores and package stores countywide",
+      "Specialty beverage retailers countywide",
       "Natural grocers (Whole Foods, Fresh Market)",
       "Festivals including Ultra, Art Basel markets, and beachside pop-ups",
     ],
@@ -40,12 +40,12 @@ const CITIES: CityData[] = [
     region: "Tampa Bay",
     titleTag: "Brand Activation Staff Tampa | Hemp & Beverage Specialists | Greenline Activations",
     metaDescription:
-      "Hire HempSafe™-certified brand activation staff in Tampa. Greenline Activations deploys trained ambassadors to Tampa Bay smoke shops, liquor stores, and events. No contracts. Book online.",
+      "Hire HempSafe™-certified brand activation staff in Tampa. Greenline Activations deploys trained ambassadors to Tampa Bay smoke shops, specialty retailers, and events. No contracts. Book online.",
     context:
-      "Tampa Bay is one of Florida's fastest-growing beverage retail markets, with a strong craft beer and spirits culture transitioning rapidly into hemp and functional beverages. Ybor City, South Tampa, and St. Pete represent high-density activation corridors.",
+      "Tampa Bay is one of Florida's fastest-growing hemp and functional beverage markets. Ybor City, South Tampa, and St. Pete represent high-density activation corridors with strong smoke shop networks and specialty retailers embracing hemp-derived drinks.",
     primaryRetailChannels: [
       "Smoke shops in Ybor City and South Tampa",
-      "Liquor stores countywide",
+      "Specialty beverage retailers countywide",
       "Natural grocers and co-ops in South Tampa and St. Pete",
       "Festivals including Gasparilla and Tampa Bay Beer Week",
     ],
@@ -57,12 +57,12 @@ const CITIES: CityData[] = [
     region: "Orlando / Central Florida",
     titleTag: "Brand Activation Staff Orlando | Hemp & Beverage Specialists | Greenline Activations",
     metaDescription:
-      "Hire HempSafe™-certified brand activation staff in Orlando. Greenline Activations deploys trained ambassadors to Orlando smoke shops, liquor stores, and events. No contracts. Book online.",
+      "Hire HempSafe™-certified brand activation staff in Orlando. Greenline Activations deploys trained ambassadors to Orlando smoke shops, specialty retailers, and events. No contracts. Book online.",
     context:
       "Orlando's tourism economy and large millennial population create strong demand for hemp, functional, and better-for-you beverages. The I-Drive corridor, Mills 50, and Thornton Park districts are high-traffic retail activation zones.",
     primaryRetailChannels: [
       "Smoke shops along International Drive and Mills Avenue",
-      "Total Wine and specialty liquor retailers",
+      "Specialty beverage retailers and natural grocers",
       "Natural grocers and health food stores",
       "Convention events at Orange County Convention Center",
     ],
@@ -75,12 +75,12 @@ const CITIES: CityData[] = [
     titleTag:
       "Brand Activation Staff Jacksonville | Hemp & Beverage Specialists | Greenline Activations",
     metaDescription:
-      "Hire HempSafe™-certified brand activation staff in Jacksonville. Greenline Activations deploys trained ambassadors to Jacksonville smoke shops, liquor stores, and events. No contracts. Book online.",
+      "Hire HempSafe™-certified brand activation staff in Jacksonville. Greenline Activations deploys trained ambassadors to Jacksonville smoke shops, specialty retailers, and events. No contracts. Book online.",
     context:
       "Jacksonville is Florida's largest city by area and one of the most underserved markets for premium beverage activation. A large military population, growing craft beverage scene, and an expanding smoke shop network make it a high-opportunity market for early movers.",
     primaryRetailChannels: [
       "Smoke shops in Riverside and San Marco",
-      "Liquor stores and ABC Fine Wine & Spirits locations",
+      "Package stores and specialty beverage retailers",
       "Specialty natural grocers",
       "Festivals including Jacksonville Jazz Festival and beach events",
     ],
@@ -93,12 +93,12 @@ const CITIES: CityData[] = [
     titleTag:
       "Brand Activation Staff Fort Lauderdale | Hemp & Beverage Specialists | Greenline Activations",
     metaDescription:
-      "Hire HempSafe™-certified brand activation staff in Fort Lauderdale. Greenline Activations deploys trained ambassadors to Broward County smoke shops, liquor stores, and events. No contracts. Book online.",
+      "Hire HempSafe™-certified brand activation staff in Fort Lauderdale. Greenline Activations deploys trained ambassadors to Broward County smoke shops, specialty retailers, and events. No contracts. Book online.",
     context:
       "Fort Lauderdale's dense retail corridor along Federal Highway and the Las Olas district, combined with strong tourist and boating culture demographics, make it a premium market for hemp and adult beverage activations. Broward County's smoke shop density is among the highest in Florida.",
     primaryRetailChannels: [
       "Smoke shops along Federal Highway and Broward Boulevard",
-      "Liquor stores and specialty wine shops",
+      "Package stores and specialty beverage retailers",
       "Whole Foods and Fresh Market locations in Boca/Deerfield",
       "Events including SunFest and Fort Lauderdale International Boat Show",
     ],
@@ -350,7 +350,6 @@ export default async function CityBrandActivationPage({
             {[
               { label: "Brand Activation Staff", href: "/services/brand-activation/" },
               { label: "Hemp & THC Beverage Activation", href: "/services/hemp-thc-beverage-activation/" },
-              { label: "Alcohol Beverage Activation", href: "/services/alcohol-beverage-activation/" },
               { label: "Functional Beverage Activation", href: "/services/functional-beverage-activation/" },
               { label: "HempSafe™ Certified Ambassadors", href: "/services/hempsafe-certified-brand-ambassadors/" },
               { label: "Retail Activation", href: "/services/retail-activation/" },

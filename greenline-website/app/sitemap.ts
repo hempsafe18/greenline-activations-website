@@ -22,7 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // SEO service pages
     { url: `${BASE}/services/brand-activation/`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/services/hemp-thc-beverage-activation/`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${BASE}/services/alcohol-beverage-activation/`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services/functional-beverage-activation/`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services/hempsafe-certified-brand-ambassadors/`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services/retail-activation/`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },

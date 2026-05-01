@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata: Metadata = {
   title: "Hemp & THC Beverage Brand Activation | HempSafe-Certified Ambassadors | Greenline",
   description:
-    "Greenline Activations is the only brand activation agency with HempSafe-certified staff for hemp and THC beverage brands. We deploy compliant, product-trained ambassadors to smoke shops, liquor stores, and festivals in Florida. 30% avg. conversion. Book online.",
+    "Greenline Activations is the only brand activation agency with HempSafe-certified staff for hemp and THC beverage brands. We deploy compliant, product-trained ambassadors to smoke shops, specialty retailers, and festivals in Florida. 30% avg. conversion. Book online.",
   openGraph: {
     title: "Hemp & THC Beverage Brand Activation | HempSafe-Certified Ambassadors | Greenline",
     description:
@@ -41,7 +41,7 @@ const SERVICE_SCHEMA = {
   provider: { "@type": "Organization", name: "Greenline Activations" },
   areaServed: "Florida",
   description:
-    "HempSafe-certified brand activation staff for hemp and THC beverage brands. Compliant demos at smoke shops, liquor stores, and festivals in Florida.",
+    "HempSafe-certified brand activation staff for hemp and THC beverage brands. Compliant demos at smoke shops, specialty retailers, and festivals in Florida.",
 };
 
 const HEMP_STATS = [
@@ -57,8 +57,8 @@ const CHANNELS = [
     body: "The primary distribution channel for hemp and THC drinks in Florida. High purchase intent, category-familiar shoppers, and retail staff open to brand education. Greenline ambassadors are trained on cross-category retail dynamics and know how to position hemp beverages alongside flower, vapes, and edibles.",
   },
   {
-    title: "Liquor Stores & Package Stores",
-    body: "A rapidly growing channel for hemp-derived beverages. Compliance-sensitive environment requiring ambassadors who understand alcohol-adjacent regulations and can speak to the sober-curious and functional beverage buyer segments.",
+    title: "Package Stores & Specialty Retailers",
+    body: "A rapidly growing channel for hemp-derived beverages. Ambassadors trained to navigate licensed retail environments and speak to the sober-curious and functional beverage buyer segments.",
   },
   {
     title: "Natural Grocers & Health Retailers",
@@ -197,7 +197,7 @@ export default function HempTHCBeverageActivationPage() {
                 "Age restriction enforcement — ID verification protocols that protect the retailer and your brand",
                 "Responsible sampling standards — portion sizes, frequency limits, and consumer guidance",
                 "Product accuracy — the ability to answer consumer questions about ingredients, potency, and effects without crossing compliance lines",
-                "Retailer context — how to operate in a smoke shop vs. a natural grocer vs. a liquor store environment",
+                "Retailer context — how to operate in a smoke shop vs. a natural grocer vs. a specialty retailer environment",
               ].map((item) => (
                 <div key={item} className="flex items-start gap-4 bg-bone text-ink border-2 border-ink p-4 shadow-brutal">
                   <div className="w-6 h-6 mt-0.5 flex-shrink-0 bg-canopy border-2 border-ink flex items-center justify-center font-display font-black text-[10px]">
