@@ -134,7 +134,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-4">
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[420px]">
               <Image
-                src="/images/3chi-sampling-event-setup.jpg"
+                src="/images/11.jpg"
                 alt="3Chi sampling event setup"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
