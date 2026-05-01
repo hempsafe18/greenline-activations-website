@@ -121,7 +121,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
             </div>
             <div className="overflow-hidden rounded-xl">
               <Image
-                src="/images/13.jpeg"
+                src="/images/14.jpeg"
                 alt="Ambassador connecting with store customer"
                 width={400}
                 height={500}
