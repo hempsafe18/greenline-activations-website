@@ -103,7 +103,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div className="overflow-hidden rounded-xl">
               <Image
-                src="/images/the-good-poor-event-sampling.jpg"
+                src="/images/senorita-sampling-event-setup.jpg"
                 alt="Brand ambassador in-store activation"
                 width={400}
                 height={500}
