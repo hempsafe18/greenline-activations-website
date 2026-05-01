@@ -112,7 +112,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
             </div>
             <div className="overflow-hidden rounded-xl">
               <Image
-                src="/images/10.png"
+                src="/images/12.png"
                 alt="Ambassador sampling product with customer"
                 width={400}
                 height={500}
@@ -121,7 +121,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
             </div>
             <div className="overflow-hidden rounded-xl">
               <Image
-                src="/images/9.png"
+                src="/images/13.png"
                 alt="Ambassador connecting with store customer"
                 width={400}
                 height={500}
@@ -130,7 +130,7 @@ export default function BrandAmbassadorOpportunitiesPage() {
             </div>
             <div className="overflow-hidden rounded-xl">
               <Image
-                src="/images/7.png"
+                src="/images/14.png"
                 alt="Brand ambassador holding 3CHI cannabis seltzer"
                 width={400}
                 height={500}
