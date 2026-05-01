@@ -1,0 +1,200 @@
+{
+  "pages": [
+    {
+      "id": "homepage",
+      "route": "/",
+      "file": "app/page.tsx",
+      "targetKeyword": "brand activation agency",
+      "secondaryKeywords": [
+        "brand activation staff for hire",
+        "beverage sampling agency",
+        "hemp activation agency",
+        "Florida brand activation"
+      ],
+      "titleTag": "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
+      "metaDescription": "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to Florida retail — no contracts, no proposals. 30% avg. sample-to-purchase conversion.",
+      "h1": "The Brand Activation Agency Built for Beverage Brands",
+      "h2s": [
+        "Productized Activation — No Contracts, No Proposals",
+        "HempSafe Certified, Conversion-Focused Ambassadors",
+        "Proven Results: 30% Sample-to-Purchase Conversion",
+        "Channels We Activate",
+        "How It Works",
+        "Florida's #1 Retail Activation Agency",
+        "Trusted by Leading Hemp & Adult Beverage Brands"
+      ],
+      "canonical": "https://www.greenlineactivations.com/",
+      "wordCountTarget": "1200-1600",
+      "schema": ["Organization", "HowTo", "FAQ"],
+      "primaryCta": { "text": "Choose Your Activation Tier", "href": "/book/" },
+      "secondaryCta": { "text": "See Conversion Data", "href": "/results/" },
+      "internalLinks": [
+        "/services/brand-activation/",
+        "/services/hemp-thc-beverage-activation/",
+        "/services/alcohol-beverage-activation/",
+        "/services/hempsafe-certified-brand-ambassadors/",
+        "/florida/brand-activation/",
+        "/results/",
+        "/book/"
+      ]
+    },
+    {
+      "id": "brand-activation",
+      "route": "/services/brand-activation",
+      "file": "app/services/brand-activation/page.tsx",
+      "targetKeyword": "brand activation staff for hire",
+      "secondaryKeywords": [
+        "brand activation services",
+        "promotional staff agency",
+        "event sampling staff",
+        "product demonstration staff",
+        "retail activation staff"
+      ],
+      "titleTag": "Brand Activation Staff for Hire | Greenline Activations — Beverage & Hemp Specialists",
+      "metaDescription": "Hire trained brand activation staff for your next campaign. Greenline Activations provides HempSafe-certified ambassadors for retail demos, festivals, and sampling events across Florida. Book online in minutes — no contracts required.",
+      "h1": "Brand Activation Staff for Hire — Trained, Certified, Conversion-Ready",
+      "h2s": [
+        "What Makes Greenline Activation Staff Different",
+        "Our Brand Activation Services",
+        "Industry Specializations: Who We Activate For",
+        "The 50-Point Activation Recap System",
+        "Tally Tracking: Real-Time Conversion Data",
+        "Brand Activation Staff Across Florida",
+        "Frequently Asked Questions",
+        "Book Your Activation Today"
+      ],
+      "canonical": "https://www.greenlineactivations.com/services/brand-activation/",
+      "wordCountTarget": "1400-1800",
+      "schema": ["Service", "FAQ", "BreadcrumbList"],
+      "primaryCta": { "text": "Book Activation Staff", "href": "/book/" },
+      "secondaryCta": { "text": "View Activation Tiers", "href": "/book/#tiers" },
+      "breadcrumb": [
+        { "name": "Home", "href": "/" },
+        { "name": "Services", "href": "/services/brand-activation/" },
+        { "name": "Brand Activation", "href": "/services/brand-activation/" }
+      ],
+      "internalLinks": [
+        "/",
+        "/services/hemp-thc-beverage-activation/",
+        "/services/alcohol-beverage-activation/",
+        "/services/hempsafe-certified-brand-ambassadors/",
+        "/services/retail-activation/",
+        "/florida/brand-activation/",
+        "/results/",
+        "/book/"
+      ],
+      "faq": [
+        {
+          "question": "How much does brand activation staff cost?",
+          "answer": "Greenline Activations uses a productized tier model — no custom proposals, no contracts. Pick your tier and quantity, checkout via Stripe, and we deploy. Pricing is transparent and available at greenlineactivations.com/book."
+        },
+        {
+          "question": "Do your ambassadors need product knowledge training?",
+          "answer": "Every Greenline ambassador completes HempSafe™ certification before their first activation. That covers hemp regulations, THC compliance, age restrictions, responsible sampling protocols, and product category knowledge specific to beverage brands."
+        },
+        {
+          "question": "Can I book activation staff without a long-term contract?",
+          "answer": "Yes. Greenline is the only activation agency with a fully productized model — pick a tier, pick a quantity, checkout with Stripe. No proposals, no contracts, no minimums beyond your selected tier."
+        },
+        {
+          "question": "How do you measure activation ROI?",
+          "answer": "Every activation is tracked with Tally in real time. After each event, your brand receives a 50-point activation recap covering samples distributed, consumer conversations, purchase conversions, retailer feedback, and next-step recommendations."
+        },
+        {
+          "question": "Do you work with hemp and THC beverage brands?",
+          "answer": "Yes — hemp and THC beverage activation is our core specialization. Every ambassador is HempSafe™ certified and trained in state-specific hemp regulations, age verification, and responsible sampling for regulated products."
+        },
+        {
+          "question": "Which Florida cities do you serve?",
+          "answer": "Greenline Activations deploys across Florida including Miami/Dade, Tampa Bay, Orlando, Jacksonville, Fort Lauderdale, and surrounding markets. Contact us for coverage in other areas."
+        }
+      ]
+    },
+    {
+      "id": "hemp-thc-beverage-activation",
+      "route": "/services/hemp-thc-beverage-activation",
+      "file": "app/services/hemp-thc-beverage-activation/page.tsx",
+      "targetKeyword": "hemp beverage brand activation",
+      "secondaryKeywords": [
+        "THC drink sampling staff",
+        "hemp drink demo staff",
+        "cannabis beverage activation agency",
+        "hemp brand ambassador",
+        "HempSafe certified staff",
+        "THC beverage sampling Florida",
+        "functional cannabis drink activation"
+      ],
+      "titleTag": "Hemp & THC Beverage Brand Activation | HempSafe-Certified Ambassadors | Greenline",
+      "metaDescription": "Greenline Activations is the only brand activation agency with HempSafe-certified staff for hemp and THC beverage brands. We deploy compliant, product-trained ambassadors to smoke shops, liquor stores, and festivals in Florida. 30% avg. conversion. Book online.",
+      "h1": "Hemp & THC Beverage Brand Activation — Compliant, Trained, Converting",
+      "h2s": [
+        "Why Hemp Beverages Need Specialized Activation Staff",
+        "HempSafe™ Certification: What It Means for Your Brand",
+        "Where We Activate Hemp & THC Beverage Brands",
+        "What Our Hemp Activation Staff Knows",
+        "Conversion Data: 30% Sample-to-Purchase",
+        "The Tally Tracking Difference",
+        "Florida Hemp Beverage Activation Markets",
+        "Hemp Activation FAQs",
+        "Book a Hemp Beverage Activation"
+      ],
+      "canonical": "https://www.greenlineactivations.com/services/hemp-thc-beverage-activation/",
+      "wordCountTarget": "1500-2000",
+      "schema": ["Service", "FAQ", "BreadcrumbList", "HowTo"],
+      "primaryCta": { "text": "Book Hemp Activation Staff", "href": "/book/" },
+      "secondaryCta": { "text": "Download Our Compliance Checklist", "href": "/resources/hemp-compliance-checklist/" },
+      "breadcrumb": [
+        { "name": "Home", "href": "/" },
+        { "name": "Services", "href": "/services/brand-activation/" },
+        { "name": "Hemp & THC Beverage Activation", "href": "/services/hemp-thc-beverage-activation/" }
+      ],
+      "internalLinks": [
+        "/",
+        "/services/brand-activation/",
+        "/services/hempsafe-certified-brand-ambassadors/",
+        "/florida/brand-activation/",
+        "/results/",
+        "/book/"
+      ],
+      "faq": [
+        {
+          "question": "Is it legal to sample hemp beverages in Florida retail stores?",
+          "answer": "Yes, with proper protocols. Florida permits hemp-derived beverage sampling under state hemp regulations, subject to age verification, responsible serving guidelines, and retailer authorization. Greenline's HempSafe™-certified ambassadors are trained in all applicable Florida requirements."
+        },
+        {
+          "question": "What is HempSafe certification and why does it matter?",
+          "answer": "HempSafe™ is a compliance certification program covering hemp regulations, THC content limits, age restriction enforcement, responsible sampling standards, and product knowledge for hemp-derived beverages. Every Greenline ambassador holds this certification before deployment — protecting your brand and ensuring compliant activations."
+        },
+        {
+          "question": "Can your staff handle age verification for THC products?",
+          "answer": "Yes. Age verification is a core component of HempSafe™ certification training. Greenline ambassadors are trained in ID verification procedures, documentation practices, and refusal protocols for age-restricted hemp and THC products."
+        },
+        {
+          "question": "How do you track ROI on hemp beverage activations?",
+          "answer": "Every hemp activation is Tally-tracked in real time. You receive a 50-point activation recap after each event covering samples poured, consumer conversations logged, purchase conversions recorded, retailer feedback, and compliance observations. Our average sample-to-purchase conversion rate for hemp beverage activations is 30%."
+        },
+        {
+          "question": "What is the difference between hemp beverage activation and standard product sampling?",
+          "answer": "Standard sampling staff have no training in hemp compliance, THC regulations, or age verification for regulated products. Greenline's hemp-specialized ambassadors are HempSafe™ certified, understand TAC milligram limits and state-specific legality, and are trained to have accurate, compliant consumer conversations about hemp and THC products."
+        },
+        {
+          "question": "Do you work with Delta-9 THC and Delta-8 brands?",
+          "answer": "Yes. Greenline Activations works with hemp-derived Delta-8, Delta-9, and broad-spectrum THC beverage brands. All ambassadors are trained on the regulatory distinctions between Delta-8 and Delta-9 THC, Florida-specific compliance requirements, and responsible consumer communication for each product type."
+        }
+      ]
+    }
+  ],
+  "globalMetadata": {
+    "siteName": "Greenline Activations",
+    "baseUrl": "https://www.greenlineactivations.com",
+    "defaultOgImage": "/og-default.jpg",
+    "twitterHandle": "@GreenlineActiv",
+    "locale": "en_US"
+  },
+  "statsStrip": [
+    { "value": "30%", "label": "Avg. Sample-to-Purchase Conversion" },
+    { "value": "100%", "label": "HempSafe™ Certified Ambassadors" },
+    { "value": "50-pt", "label": "Post-Activation Recap" },
+    { "value": "Real-Time", "label": "Tally-Tracked Activations" }
+  ]
+}
