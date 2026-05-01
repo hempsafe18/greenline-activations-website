@@ -5,7 +5,7 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "Brand Ambassador Opportunities",
   description:
-    "Join Greenline Activations and support brand activations across Florida. Performance-driven brand ambassador roles with competitive pay and rewards.",
+    "Join Greenline Activations and support brand activations nationwide. Performance-driven brand ambassador roles with competitive pay and rewards — West Coast, South, and beyond.",
 };
 
 const perks = [
@@ -35,15 +35,15 @@ const perks = [
     description: "Top ambassadors get access to lead rep and field coordinator roles as we expand.",
   },
   {
-    icon: "🌴",
-    title: "Florida-Based",
-    description: "Work in your area — no travel required. We match you to accounts near you.",
+    icon: "🗺️",
+    title: "Nationwide Markets",
+    description: "We operate across the West Coast, South, and beyond — work in your city, matched to accounts near you.",
   },
 ];
 
 const requirements = [
   "21+ years old",
-  "Located in Florida (or willing to work in Florida)",
+  "Located in one of our active markets (West or South)",
   "Reliable transportation",
   "Customer-facing or sales experience a plus",
   "Passion for wellness, beverage, or lifestyle brands",
@@ -81,9 +81,9 @@ export default function BrandAmbassadorOpportunitiesPage() {
               <span className="text-green">Brands You Believe In</span>
             </h1>
             <p className="text-xl font-body text-gray-600 leading-relaxed mb-8 max-w-2xl">
-              Greenline Activations recruits and deploys Florida&apos;s top brand ambassadors
-              for hemp, functional beverage, and lifestyle brands. Flexible shifts, competitive pay,
-              real opportunities to grow.
+              Greenline Activations is now a national agency — recruiting and deploying top brand ambassadors
+              for hemp, functional beverage, and lifestyle brands across the West Coast and South.
+              Flexible shifts, competitive pay, real opportunities to grow.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/brand-ambassador-application" className="btn-primary">
@@ -229,6 +229,45 @@ export default function BrandAmbassadorOpportunitiesPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Active Markets */}
+      <section className="section bg-cream">
+        <div className="container-lg">
+          <div className="text-center mb-12">
+            <span className="tag mb-4">Where We Hire</span>
+            <h2 className="text-4xl font-bold text-dark mt-3">
+              Active Markets <span className="text-green">Nationwide</span>
+            </h2>
+            <p className="font-body text-gray-600 mt-4 max-w-xl mx-auto">
+              We are actively staffing events and retail activations in the cities below. Don&apos;t see yours? Apply anyway — we&apos;re growing fast.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="card">
+              <h3 className="font-sans font-bold text-lg text-dark mb-5 uppercase tracking-wide border-b pb-3">West</h3>
+              <ul className="grid grid-cols-2 gap-2">
+                {["Los Angeles", "San Diego", "San Francisco", "Seattle", "Phoenix", "Las Vegas"].map((city) => (
+                  <li key={city} className="flex items-center gap-2 font-body text-sm text-dark">
+                    <div className="w-2 h-2 rounded-full bg-green flex-shrink-0" />
+                    {city}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="card">
+              <h3 className="font-sans font-bold text-lg text-dark mb-5 uppercase tracking-wide border-b pb-3">South</h3>
+              <ul className="grid grid-cols-2 gap-2">
+                {["Dallas", "San Antonio", "Austin", "Houston", "New Orleans", "Nashville", "Atlanta", "Charlotte", "Charleston, SC", "Jacksonville", "Tampa", "Orlando", "Miami"].map((city) => (
+                  <li key={city} className="flex items-center gap-2 font-body text-sm text-dark">
+                    <div className="w-2 h-2 rounded-full bg-green flex-shrink-0" />
+                    {city}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>

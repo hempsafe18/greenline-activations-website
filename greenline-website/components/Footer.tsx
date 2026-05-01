@@ -37,7 +37,7 @@ export default function Footer() {
       <div className="container-xl px-4 pt-20 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           <div className="md:col-span-5">
-            <div className="tag-street mb-5">Retail Activation · Florida</div>
+            <div className="tag-street mb-5">Retail Activation · Nationwide</div>
             <h3 className="font-display font-black text-4xl md:text-5xl uppercase leading-[0.95] text-bone">
               Productized field marketing.
               <span className="text-canopy"> Add to cart.</span>
@@ -77,8 +77,8 @@ export default function Footer() {
       {/* Wordmark block */}
       <div className="border-t-2 border-bone/10 relative">
         <div className="container-xl px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-bone/50">
-          <p>© {new Date().getFullYear()} Greenline Activations. Built in Florida. Shipped to shelves.</p>
-          <p className="font-mono uppercase tracking-widest">FL · HEMPSAFE™ · NO CONTRACTS</p>
+          <p>© {new Date().getFullYear()} Greenline Activations. Built in Florida. Shipped to shelves nationwide.</p>
+          <p className="font-mono uppercase tracking-widest">NATIONAL · HEMPSAFE™ · NO CONTRACTS</p>
         </div>
       </div>
 

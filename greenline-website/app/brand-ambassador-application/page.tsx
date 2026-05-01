@@ -6,15 +6,29 @@ import Link from "next/link";
 const HUBSPOT_PORTAL_ID = "47886643";
 const HUBSPOT_FORM_ID = "c1a7fbea-19f8-4489-81bf-9cea6efc2b07";
 
-const floridaMarkets = [
-  "Miami / Fort Lauderdale",
-  "Tampa / St. Petersburg",
-  "Orlando / Central Florida",
-  "Jacksonville",
-  "Naples / Fort Myers",
-  "Gainesville / North Florida",
-  "Palm Beach / Boca Raton",
-  "Other Florida",
+const marketsByRegion: { region: string; cities: string[] }[] = [
+  {
+    region: "West",
+    cities: ["Los Angeles", "San Diego", "San Francisco", "Seattle", "Phoenix", "Las Vegas"],
+  },
+  {
+    region: "South",
+    cities: [
+      "Dallas",
+      "San Antonio",
+      "Austin",
+      "Houston",
+      "New Orleans",
+      "Nashville",
+      "Atlanta",
+      "Charlotte",
+      "Charleston, SC",
+      "Jacksonville",
+      "Tampa",
+      "Orlando",
+      "Miami",
+    ],
+  },
 ];
 
 const experienceOptions = [
@@ -183,15 +197,20 @@ export default function BrandAmbassadorApplicationPage() {
 
             {/* Market */}
             <div>
-              <label className="font-sans font-semibold text-sm text-dark block mb-2">Florida Market *</label>
+              <label className="font-sans font-semibold text-sm text-dark block mb-2">Your Market *</label>
               <select
                 name="market" required value={form.market} onChange={handleChange}
                 className="w-full border border-gray-200 rounded-lg px-4 py-3 font-body text-sm focus:outline-none focus:ring-2 focus:ring-green focus:border-transparent bg-white"
               >
-                <option value="">Select your area</option>
-                {floridaMarkets.map((m) => (
-                  <option key={m} value={m}>{m}</option>
+                <option value="">Select your city</option>
+                {marketsByRegion.map(({ region, cities }) => (
+                  <optgroup key={region} label={region}>
+                    {cities.map((city) => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </optgroup>
                 ))}
+                <option value="Other">Other (not listed)</option>
               </select>
             </div>
 

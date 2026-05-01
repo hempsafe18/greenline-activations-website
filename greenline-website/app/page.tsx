@@ -7,12 +7,12 @@ import Marquee from "@/components/Marquee";
 export const metadata: Metadata = {
   title: "Greenline Activations · Retail Activations. Add to Cart.",
   description:
-    "Productized field marketing for hemp and functional beverage brands. Build your sprint, checkout with Stripe, ship ambassadors to Florida retail — no proposals, no contracts.",
+    "Productized field marketing for hemp and functional beverage brands. Build your sprint, checkout with Stripe, ship ambassadors to retail markets nationwide — no proposals, no contracts.",
 };
 
 const MARQUEE_ITEMS = [
   "ADD SPRINT TO CART",
-  "FLORIDA RETAIL ACTIVATION",
+  "NATIONAL RETAIL ACTIVATION",
   "HEMPSAFE™ CERTIFIED",
   "NO PROPOSALS · NO CONTRACTS",
   "FIELD MARKETING · PRODUCTIZED",
@@ -22,7 +22,7 @@ const SERVICES = [
   {
     kicker: "01 / Launch",
     title: "Market Launch Pilots",
-    body: "Structured 30–60 day pilots that validate SKU velocity in real Florida accounts before a full rollout.",
+    body: "Structured 30–60 day pilots that validate SKU velocity in real accounts across any market before a full rollout.",
     href: "/pilot-program",
     cta: "Launch a pilot",
   },
@@ -73,7 +73,7 @@ export default function HomePage() {
         <div className="container-xl px-4 pt-12 md:pt-20 pb-14 md:pb-24 relative">
           <div className="grid lg:grid-cols-[1.05fr,1fr] gap-12 items-center">
             <div>
-              <span className="tag-street">Florida · Hemp + Functional Beverage</span>
+              <span className="tag-street">National · Hemp + Functional Beverage</span>
               <h1 className="mt-6 font-display font-black uppercase leading-[0.88] tracking-tighter text-ink text-[44px] sm:text-6xl lg:text-[80px]">
                 Shelf work,
                 <br />
@@ -81,7 +81,7 @@ export default function HomePage() {
               </h1>
               <p className="mt-6 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">
                 Greenline is the first <span className="font-display font-bold">productized retail activation agency</span>.
-                Pick a tier, pick a quantity, checkout with Stripe, and we deploy trained ambassadors into Florida accounts.
+                Pick a tier, pick a quantity, checkout with Stripe, and we deploy trained ambassadors into accounts across the country.
                 No proposals. No procurement. No long-term contracts.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -123,7 +123,7 @@ export default function HomePage() {
             <div>
               <span className="tag">Real Work</span>
               <h2 className="mt-4 font-display font-black uppercase text-ink text-4xl md:text-5xl leading-[0.95] tracking-tight max-w-xl">
-                Activations across <span className="text-canopy">Florida</span>.
+                Activations across <span className="text-canopy">the country</span>.
               </h2>
             </div>
             <p className="max-w-sm text-ink/70">
@@ -274,7 +274,7 @@ export default function HomePage() {
               {[
                 ["100%", "Trained"],
                 ["0", "Compliance incidents"],
-                ["FL", "Operating state"],
+                ["National", "Coverage"],
                 ["2015", "Ambassador program est."],
               ].map(([v, l]) => (
                 <div key={l}>
