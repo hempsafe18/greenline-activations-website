@@ -79,12 +79,14 @@ export default async function TagPage({ params }: Props) {
                 className="card card-hover flex flex-col group bg-white"
               >
                 {post.featured_image_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={post.featured_image_url}
-                    alt={post.title}
-                    className="w-full h-48 object-cover border-b-2 border-ink -mx-8 -mt-8 mb-6 w-[calc(100%+4rem)]"
-                  />
+                  <div className="-mx-8 -mt-8 mb-6 overflow-hidden border-b-2 border-ink">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.featured_image_url}
+                      alt={post.title}
+                      className="w-full h-48 object-cover object-center"
+                    />
+                  </div>
                 )}
                 <p className="eyebrow mb-3">
                   {new Date(post.publish_date).toLocaleDateString("en-US", {
