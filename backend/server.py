@@ -340,7 +340,7 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         "payment_status": "initiated",
         "subtotal": subtotal,
         "deposit": deposit,
-        "balance_due": deposit,  # remaining 50% due before activation
+        "balance_due": deposit,  # remaining 50% due after activation sprint
         "currency": "usd",
         "line_items": line_items,
         "event_brief": (req.event_brief.model_dump() if req.event_brief else None),
@@ -489,7 +489,7 @@ async def send_order_confirmation(order: dict) -> None:
                 <td style="padding:10px 14px;text-align:right;font-size:15px;font-weight:800;color:#5BB011;">${deposit:,.2f}</td>
               </tr>
               <tr style="background:#FAF0EA;">
-                <td colspan="3" style="padding:10px 14px;text-align:right;font-size:12px;font-weight:600;color:#0A0A0A;">Balance Due Before Activation</td>
+                <td colspan="3" style="padding:10px 14px;text-align:right;font-size:12px;font-weight:600;color:#0A0A0A;">Balance Due After Activation Sprint</td>
                 <td style="padding:10px 14px;text-align:right;font-size:13px;font-weight:700;color:#0A0A0A;">${balance_due:,.2f}</td>
               </tr>
             </table>

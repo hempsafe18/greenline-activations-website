@@ -462,7 +462,7 @@ function CartPageInner() {
                   <div className="flex items-end justify-between">
                     <div>
                       <span className="font-display font-bold uppercase tracking-wider text-sm">Due Today</span>
-                      <p className="text-[10px] text-ink/50 mt-0.5">50% deposit · balance due before activation</p>
+                      <p className="text-[10px] text-ink/50 mt-0.5">50% deposit · balance due after activation sprint</p>
                     </div>
                     <span className="font-display font-black text-3xl text-canopy" data-testid="cart-summary-subtotal">
                       {formatUSD(subtotal / 2)}
@@ -496,7 +496,7 @@ function CartPageInner() {
                   </div>
                 )}
                 <p className="mt-4 text-[11px] text-ink/60 leading-relaxed">
-                  Secure checkout via Stripe. 50% deposit collected today — remaining balance invoiced before activation begins.
+                  Secure checkout via Stripe. 50% deposit collected today — remaining balance invoiced after your activation sprint.
                   {skipDetails
                     ? " We'll email you an onboarding scheduler after payment."
                     : " We'll confirm the brief + next steps after payment."}
