@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 const MARQUEE_ITEMS = [
   "ADD SPRINT TO CART",
-  "NATIONAL RETAIL ACTIVATION",
+  "AL RETAIL ACTIVATION",
   "HEMPSAFE™ CERTIFIED",
   "NO PROPOSALS · NO CONTRACTS",
   "FIELD MARKETING · PRODUCTIZED",
@@ -82,11 +82,11 @@ const CHANNELS = [
 ];
 
 const FLORIDA_CITIES = [
-  { city: "Miami / Dade County", href: "/Nation/miami/brand-activation-staff/" },
-  { city: "Tampa Bay", href: "/Nation/tampa/brand-activation-staff/" },
-  { city: "Orlando", href: "/Nation/orlando/brand-activation-staff/" },
-  { city: "Jacksonville", href: "/Nation/jacksonville/brand-activation-staff/" },
-  { city: "Fort Lauderdale", href: "/Nation/fort-lauderdale/brand-activation-staff/" },
+  { city: "Miami / Dade County", href: "/florida/miami/brand-activation-staff/" },
+  { city: "Tampa Bay", href: "/florida/tampa/brand-activation-staff/" },
+  { city: "Orlando", href: "/florida/orlando/brand-activation-staff/" },
+  { city: "Jacksonville", href: "/florida/jacksonville/brand-activation-staff/" },
+  { city: "Fort Lauderdale", href: "/florida/fort-lauderdale/brand-activation-staff/" },
 ];
 
 const HOWTO_SCHEMA = {
@@ -228,7 +228,7 @@ export default function HomePage() {
               ))}
             </ul>
             <p className="mt-5 text-sm text-ink/70 font-display font-bold uppercase tracking-tight">
-              No other activation agency in Nation can say that.
+              No other activation agency in the Nation can say that.
             </p>
             <div className="mt-6">
               <a
@@ -305,7 +305,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[360px]">
               <Image
                 src="/images/11.jpg"
-                alt="HempSafe certified brand ambassador at 3Chi sampling event in Nation smoke shop"
+                alt="HempSafe certified brand ambassador at 3Chi sampling event in Florida smoke shop"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
@@ -317,7 +317,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[360px]">
               <Image
                 src="/images/senorita-sampling-event-setup.jpg"
-                alt="Brand ambassador at Señorita beverage sampling event in Nation specialty retailer"
+                alt="Brand ambassador at Señorita beverage sampling event in Florida specialty retailer"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
@@ -385,7 +385,7 @@ export default function HomePage() {
         <div className="container-xl px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="tag-street">Nation Markets</span>
+              <span className="tag-street">Florida Markets</span>
               <h2 className="mt-4 font-display font-black uppercase text-4xl md:text-5xl leading-[0.95] tracking-tight">
                 Florida&apos;s #1 Retail Activation Agency
               </h2>
@@ -393,7 +393,7 @@ export default function HomePage() {
                 Greenline is built for Florida — the fastest-growing hemp beverage market in the Southeast. We activate across all primary Florida markets.
               </p>
               <div className="mt-6">
-                <Link href="/Nation/brand-activation/" className="btn-canopy text-sm">
+                <Link href="/florida/brand-activation/" className="btn-canopy text-sm">
                   See All Florida Markets →
                 </Link>
               </div>
