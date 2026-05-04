@@ -40,6 +40,9 @@ STRIPE_API_KEY = os.environ["STRIPE_API_KEY"]
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "orders@greenlineactivations.com")
+APP_URL = os.environ.get("APP_URL", "https://www.greenlineactivations.com").rstrip("/")
+
+stripe_lib.api_key = STRIPE_API_KEY
 
 mongo_client = AsyncIOMotorClient(MONGO_URL)
 db = mongo_client[DB_NAME]
@@ -307,11 +310,6 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
     success_url = f"{origin}/order/success/?session_id={{CHECKOUT_SESSION_ID}}&order_id={order_id}"
     cancel_url = f"{origin}/cart/?cancelled=1"
 
-    # Create Stripe checkout session
-    host_url = str(http_request.base_url)
-    webhook_url = f"{host_url.rstrip('/')}/api/webhook/stripe"
-    stripe_checkout = StripeCheckout(api_key=STRIPE_API_KEY, webhook_url=webhook_url)
-
     metadata = {
         "order_id": order_id,
         "qty_total": str(sum(li["qty"] for li in line_items)),
@@ -322,20 +320,34 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         "total_subtotal": str(subtotal),
     }
 
-    checkout_req = CheckoutSessionRequest(
-        amount=float(deposit),
-        currency="usd",
+    tiers_desc = ", ".join(f"{li['qty']} × {li['tier_name']}" for li in line_items)
+
+    # Create Stripe checkout session via native SDK so we can set the product image
+    raw_session = await asyncio.to_thread(
+        stripe_lib.checkout.Session.create,
+        mode="payment",
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "unit_amount": int(round(deposit * 100)),
+                "product_data": {
+                    "name": "Greenline Activation Sprint — 50% Deposit",
+                    "description": f"{tiers_desc} · Balance due after activation sprint",
+                    "images": [f"{APP_URL}/images/greenline-activation-sprint-product-v2.png"],
+                },
+            },
+            "quantity": 1,
+        }],
         success_url=success_url,
         cancel_url=cancel_url,
         metadata=metadata,
     )
-    session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_req)
 
     # Persist order + payment transaction before redirect
     now = datetime.now(timezone.utc).isoformat()
     order_doc = {
         "order_id": order_id,
-        "stripe_session_id": session.session_id,
+        "stripe_session_id": raw_session.id,
         "status": "pending",
         "payment_status": "initiated",
         "subtotal": subtotal,
@@ -352,7 +364,7 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
     await db.payment_transactions.insert_one(
         {
             "order_id": order_id,
-            "session_id": session.session_id,
+            "session_id": raw_session.id,
             "amount": deposit,
             "currency": "usd",
             "payment_status": "initiated",
@@ -363,8 +375,8 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
     )
 
     return CheckoutResponse(
-        url=session.url,
-        session_id=session.session_id,
+        url=raw_session.url,
+        session_id=raw_session.id,
         order_id=order_id,
         subtotal=deposit,
     )
