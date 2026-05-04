@@ -9,7 +9,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata: Metadata = {
   title: "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
   description:
-    "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to Florida retail — no contracts, no proposals. 30% avg. sample-to-purchase conversion.",
+    "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to National retail — no contracts, no proposals. 30% avg. sample-to-purchase conversion.",
   openGraph: {
     title: "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
     description:
@@ -81,12 +81,12 @@ const CHANNELS = [
   },
 ];
 
-const FLORIDA_CITIES = [
-  { city: "Miami / Dade County", href: "/florida/miami/brand-activation-staff/" },
-  { city: "Tampa Bay", href: "/florida/tampa/brand-activation-staff/" },
-  { city: "Orlando", href: "/florida/orlando/brand-activation-staff/" },
-  { city: "Jacksonville", href: "/florida/jacksonville/brand-activation-staff/" },
-  { city: "Fort Lauderdale", href: "/florida/fort-lauderdale/brand-activation-staff/" },
+const Nation_CITIES = [
+  { city: "Miami / Dade County", href: "/Nation/miami/brand-activation-staff/" },
+  { city: "Tampa Bay", href: "/Nation/tampa/brand-activation-staff/" },
+  { city: "Orlando", href: "/Nation/orlando/brand-activation-staff/" },
+  { city: "Jacksonville", href: "/Nation/jacksonville/brand-activation-staff/" },
+  { city: "Fort Lauderdale", href: "/Nation/fort-lauderdale/brand-activation-staff/" },
 ];
 
 const HOWTO_SCHEMA = {
@@ -130,7 +130,7 @@ export default function HomePage() {
               </h1>
               <p className="mt-6 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">
                 Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to smoke shops,
-                specialty retailers, and festivals across Florida. Pick a tier. Checkout online. Convert.
+                specialty retailers, and festivals across Nation. Pick a tier. Checkout online. Convert.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/book/" className="btn-street text-base" data-testid="hero-cta-primary">
@@ -228,7 +228,7 @@ export default function HomePage() {
               ))}
             </ul>
             <p className="mt-5 text-sm text-ink/70 font-display font-bold uppercase tracking-tight">
-              No other activation agency in Florida can say that.
+              No other activation agency in Nation can say that.
             </p>
             <div className="mt-6">
               <a
@@ -305,7 +305,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[360px]">
               <Image
                 src="/images/11.jpg"
-                alt="HempSafe certified brand ambassador at 3Chi sampling event in Florida smoke shop"
+                alt="HempSafe certified brand ambassador at 3Chi sampling event in Nation smoke shop"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
@@ -317,7 +317,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden border-2 border-ink shadow-brutal bg-white h-[360px]">
               <Image
                 src="/images/senorita-sampling-event-setup.jpg"
-                alt="Brand ambassador at Señorita beverage sampling event in Florida specialty retailer"
+                alt="Brand ambassador at Señorita beverage sampling event in Nation specialty retailer"
                 fill
                 sizes="(min-width: 768px) 33vw, 100vw"
                 className="object-cover"
@@ -380,26 +380,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* H2: Florida's #1 Retail Activation Agency */}
+      {/* H2: Nation's #1 Retail Activation Agency */}
       <section className="section bg-ink text-bone border-b-2 border-ink">
         <div className="container-xl px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="tag-street">Florida Markets</span>
+              <span className="tag-street">Nation Markets</span>
               <h2 className="mt-4 font-display font-black uppercase text-4xl md:text-5xl leading-[0.95] tracking-tight">
-                Florida&apos;s #1 Retail Activation Agency
+                Nation&apos;s #1 Retail Activation Agency
               </h2>
               <p className="mt-5 text-bone/80 leading-relaxed max-w-lg">
-                Greenline is built for Florida — the fastest-growing hemp beverage market in the Southeast. We activate across all primary Florida markets.
+                Greenline is built for Nation — the fastest-growing hemp beverage market in the Southeast. We activate across all primary Nation markets.
               </p>
               <div className="mt-6">
-                <Link href="/florida/brand-activation/" className="btn-canopy text-sm">
-                  See All Florida Markets →
+                <Link href="/Nation/brand-activation/" className="btn-canopy text-sm">
+                  See All Nation Markets →
                 </Link>
               </div>
             </div>
             <div className="space-y-2">
-              {FLORIDA_CITIES.map(({ city, href }) => (
+              {Nation_CITIES.map(({ city, href }) => (
                 <Link
                   key={href}
                   href={href}
