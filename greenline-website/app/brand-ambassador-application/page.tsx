@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 
 const HUBSPOT_PORTAL_ID = "47886643";
@@ -51,6 +51,7 @@ export default function BrandAmbassadorApplicationPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const submittingRef = useRef(false);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -74,6 +75,8 @@ export default function BrandAmbassadorApplicationPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setLoading(true);
     setError("");
 
@@ -110,6 +113,7 @@ export default function BrandAmbassadorApplicationPage() {
       setError("Something went wrong. Please try again or email us directly.");
     } finally {
       setLoading(false);
+      submittingRef.current = false;
     }
   }
 
