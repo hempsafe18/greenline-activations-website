@@ -81,7 +81,7 @@ const CHANNELS = [
   },
 ];
 
-const Nation_CITIES = [
+const FLORIDA_CITIES = [
   { city: "Miami / Dade County", href: "/Nation/miami/brand-activation-staff/" },
   { city: "Tampa Bay", href: "/Nation/tampa/brand-activation-staff/" },
   { city: "Orlando", href: "/Nation/orlando/brand-activation-staff/" },
