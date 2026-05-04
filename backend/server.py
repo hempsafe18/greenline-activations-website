@@ -333,7 +333,7 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
                 "product_data": {
                     "name": "Greenline Activation Sprint — 50% Deposit",
                     "description": f"{tiers_desc} · Balance due after activation sprint",
-                    "images": [f"{APP_URL}/images/greenline-activation-sprint-product-v2.png"],
+                    "images": ["https://res.cloudinary.com/activation/image/upload/v1777862063/greenline-activation-sprint-product-v2_n7exke.png"],
                 },
             },
             "quantity": 1,
