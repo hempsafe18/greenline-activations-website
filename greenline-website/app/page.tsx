@@ -380,26 +380,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* H2: Nation's #1 Retail Activation Agency */}
+      {/* H2: Florida's #1 Retail Activation Agency */}
       <section className="section bg-ink text-bone border-b-2 border-ink">
         <div className="container-xl px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <span className="tag-street">Nation Markets</span>
               <h2 className="mt-4 font-display font-black uppercase text-4xl md:text-5xl leading-[0.95] tracking-tight">
-                Nation&apos;s #1 Retail Activation Agency
+                Florida&apos;s #1 Retail Activation Agency
               </h2>
               <p className="mt-5 text-bone/80 leading-relaxed max-w-lg">
-                Greenline is built for Nation — the fastest-growing hemp beverage market in the Southeast. We activate across all primary Nation markets.
+                Greenline is built for Florida — the fastest-growing hemp beverage market in the Southeast. We activate across all primary Florida markets.
               </p>
               <div className="mt-6">
                 <Link href="/Nation/brand-activation/" className="btn-canopy text-sm">
-                  See All Nation Markets →
+                  See All Florida Markets →
                 </Link>
               </div>
             </div>
             <div className="space-y-2">
-              {Nation_CITIES.map(({ city, href }) => (
+              {FLORIDA_CITIES.map(({ city, href }) => (
                 <Link
                   key={href}
                   href={href}
