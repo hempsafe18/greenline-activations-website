@@ -130,7 +130,7 @@ export default function HomePage() {
               </h1>
               <p className="mt-6 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">
                 Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to smoke shops,
-                specialty retailers, and festivals across Nation. Pick a tier. Checkout online. Convert.
+                specialty retailers, and festivals across the Nation. Pick a tier. Checkout online. Convert.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/book/" className="btn-street text-base" data-testid="hero-cta-primary">
