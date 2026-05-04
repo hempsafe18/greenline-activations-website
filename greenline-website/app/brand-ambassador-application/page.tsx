@@ -89,10 +89,12 @@ export default function BrandAmbassadorApplicationPage() {
               { name: "lastname",                    value: form.lastName },
               { name: "email",                       value: form.email },
               { name: "phone",                       value: form.phone },
-              { name: "florida_market",              value: form.market },
+              { name: "your_market",              value: form.market },
               { name: "brand_ambassador_experience", value: form.experience },
               { name: "typical_availability",        value: form.availability },
               { name: "about",                       value: form.message },
+              { name: "age",                       value: form.age },
+              { name: "transport",                       value: form.transport },
             ],
             context: {
               pageUri: "https://www.greenlineactivations.com/brand-ambassador-application",
