@@ -454,11 +454,20 @@ function CartPageInner() {
                     );
                   })}
                 </div>
-                <div className="mt-5 pt-5 border-t-2 border-dashed border-ink/30 flex items-end justify-between">
-                  <span className="font-display font-bold uppercase tracking-wider text-sm">Subtotal</span>
-                  <span className="font-display font-black text-3xl" data-testid="cart-summary-subtotal">
-                    {formatUSD(subtotal)}
-                  </span>
+                <div className="mt-5 pt-5 border-t-2 border-dashed border-ink/30 space-y-2">
+                  <div className="flex items-center justify-between text-ink/60">
+                    <span className="font-display font-bold uppercase tracking-wider text-xs">Sprint Total</span>
+                    <span className="font-display font-bold text-sm">{formatUSD(subtotal)}</span>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <span className="font-display font-bold uppercase tracking-wider text-sm">Due Today</span>
+                      <p className="text-[10px] text-ink/50 mt-0.5">50% deposit · balance due before activation</p>
+                    </div>
+                    <span className="font-display font-black text-3xl text-canopy" data-testid="cart-summary-subtotal">
+                      {formatUSD(subtotal / 2)}
+                    </span>
+                  </div>
                 </div>
                 <button
                   onClick={onCheckout}
@@ -468,9 +477,7 @@ function CartPageInner() {
                 >
                   {submitting
                     ? "Connecting to Stripe…"
-                    : !serverReady
-                    ? "Checkout with Stripe →"
-                    : "Checkout with Stripe →"}
+                    : "Pay Deposit & Continue →"}
                 </button>
                 {!serverReady && !submitting && (
                   <p className="mt-2 text-[11px] text-ink/50">
@@ -489,7 +496,7 @@ function CartPageInner() {
                   </div>
                 )}
                 <p className="mt-4 text-[11px] text-ink/60 leading-relaxed">
-                  Secure checkout via Stripe. Prices shown are server-verified.
+                  Secure checkout via Stripe. 50% deposit collected today — remaining balance invoiced before activation begins.
                   {skipDetails
                     ? " We'll email you an onboarding scheduler after payment."
                     : " We'll confirm the brief + next steps after payment."}

@@ -300,6 +300,7 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         )
         subtotal += q["subtotal"]
     subtotal = round(subtotal, 2)
+    deposit = round(subtotal * 0.5, 2)  # 50% deposit collected at checkout
 
     order_id = str(uuid.uuid4())
     origin = req.origin_url.rstrip("/")
@@ -317,10 +318,12 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         "brand_name": (req.event_brief.brand_name if req.event_brief else "—"),
         "contact_email": (req.event_brief.contact_email if req.event_brief else ""),
         "skip_details": "1" if req.skip_details else "0",
+        "deposit_only": "1",
+        "total_subtotal": str(subtotal),
     }
 
     checkout_req = CheckoutSessionRequest(
-        amount=float(subtotal),
+        amount=float(deposit),
         currency="usd",
         success_url=success_url,
         cancel_url=cancel_url,
@@ -336,6 +339,8 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         "status": "pending",
         "payment_status": "initiated",
         "subtotal": subtotal,
+        "deposit": deposit,
+        "balance_due": deposit,  # remaining 50% due before activation
         "currency": "usd",
         "line_items": line_items,
         "event_brief": (req.event_brief.model_dump() if req.event_brief else None),
@@ -348,7 +353,7 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         {
             "order_id": order_id,
             "session_id": session.session_id,
-            "amount": subtotal,
+            "amount": deposit,
             "currency": "usd",
             "payment_status": "initiated",
             "metadata": metadata,
@@ -361,7 +366,7 @@ async def create_checkout(req: CheckoutRequest, http_request: Request):
         url=session.url,
         session_id=session.session_id,
         order_id=order_id,
-        subtotal=subtotal,
+        subtotal=deposit,
     )
 
 
@@ -433,6 +438,8 @@ async def send_order_confirmation(order: dict) -> None:
     short_id = order_id[:8].upper()
     line_items = order.get("line_items", [])
     subtotal = order.get("subtotal", 0)
+    deposit = order.get("deposit", round(subtotal * 0.5, 2))
+    balance_due = order.get("balance_due", deposit)
 
     rows = "".join(
         f"<tr>"
@@ -474,8 +481,16 @@ async def send_order_confirmation(order: dict) -> None:
               </tr>
               {rows}
               <tr style="background:#FAF0EA;">
-                <td colspan="3" style="padding:12px 14px;text-align:right;font-size:13px;font-weight:700;color:#0A0A0A;">Total Paid</td>
-                <td style="padding:12px 14px;text-align:right;font-size:15px;font-weight:800;color:#5BB011;">${subtotal:,.2f}</td>
+                <td colspan="3" style="padding:10px 14px;text-align:right;font-size:12px;font-weight:600;color:#0A0A0A;">Sprint Total</td>
+                <td style="padding:10px 14px;text-align:right;font-size:13px;font-weight:700;color:#0A0A0A;">${subtotal:,.2f}</td>
+              </tr>
+              <tr style="background:#FAF0EA;">
+                <td colspan="3" style="padding:10px 14px;text-align:right;font-size:12px;font-weight:600;color:#0A0A0A;">Deposit Paid (50%)</td>
+                <td style="padding:10px 14px;text-align:right;font-size:15px;font-weight:800;color:#5BB011;">${deposit:,.2f}</td>
+              </tr>
+              <tr style="background:#FAF0EA;">
+                <td colspan="3" style="padding:10px 14px;text-align:right;font-size:12px;font-weight:600;color:#0A0A0A;">Balance Due Before Activation</td>
+                <td style="padding:10px 14px;text-align:right;font-size:13px;font-weight:700;color:#0A0A0A;">${balance_due:,.2f}</td>
               </tr>
             </table>
 
