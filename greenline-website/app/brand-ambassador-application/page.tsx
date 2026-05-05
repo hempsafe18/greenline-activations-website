@@ -92,7 +92,7 @@ export default function BrandAmbassadorApplicationPage() {
               { name: "lastname",                    value: form.lastName },
               { name: "email",                       value: form.email },
               { name: "phone",                       value: form.phone },
-              { name: "your_market",              value: form.market },
+              { name: "florida_market",              value: form.market },
               { name: "brand_ambassador_experience", value: form.experience },
               { name: "typical_availability",        value: form.availability },
               { name: "about",                       value: form.message },
