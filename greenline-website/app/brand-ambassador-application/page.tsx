@@ -82,6 +82,11 @@ export default function BrandAmbassadorApplicationPage() {
     setError("");
 
     try {
+      const hutk = document.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("hubspotutk="))
+        ?.split("=")[1];
+
       const res = await fetch(
         `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`,
         {
@@ -97,10 +102,11 @@ export default function BrandAmbassadorApplicationPage() {
               { name: "brand_ambassador_experience", value: form.experience },
               { name: "typical_availability",        value: form.availability },
               { name: "about",                       value: form.message },
-              { name: "age",                       value: form.age },
-              { name: "transport",                       value: form.transport },
+              { name: "age",                         value: form.age },
+              { name: "transport",                   value: form.transport },
             ],
             context: {
+              ...(hutk ? { hutk } : {}),
               pageUri: "https://www.greenlineactivations.com/brand-ambassador-application",
               pageName: "Brand Ambassador Application",
             },
