@@ -75,6 +75,7 @@ export default function BrandAmbassadorApplicationPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    e.stopPropagation();
     if (submittingRef.current) return;
     submittingRef.current = true;
     setLoading(true);
