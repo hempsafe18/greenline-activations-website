@@ -6,8 +6,17 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   eslint: {
-    // Don't fail builds on lint warnings — admin UI ships fast.
     ignoreDuringBuilds: true,
+  },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "greenlineactivations.com" }],
+        destination: "https://www.greenlineactivations.com/:path*",
+        permanent: true,
+      },
+    ];
   },
 };
 
