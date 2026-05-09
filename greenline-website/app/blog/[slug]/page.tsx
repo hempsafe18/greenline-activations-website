@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog-api";
 
+export const revalidate = 300;
+
 export const dynamicParams = false;
 
 interface Props {

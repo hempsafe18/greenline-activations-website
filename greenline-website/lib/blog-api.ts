@@ -6,6 +6,8 @@
 const BACKEND =
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8001";
 
+const FETCH_TIMEOUT_MS = 8000;
+
 export interface BlogPost {
   id: string;
   slug: string;
@@ -20,14 +22,21 @@ export interface BlogPost {
   status: "draft" | "published";
 }
 
-async function fetchJson<T>(path: string): Promise<T> {
-  const res = await fetch(`${BACKEND}${path}`, {
-    cache: "force-cache",
-  });
-  if (!res.ok) {
-    throw new Error(`API ${res.status} for ${path}`);
+async function fetchJson<T>(path: string, revalidate = 300): Promise<T> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${BACKEND}${path}`, {
+      next: { revalidate },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new Error(`API ${res.status} for ${path}`);
+    }
+    return (await res.json()) as T;
+  } finally {
+    clearTimeout(timer);
   }
-  return (await res.json()) as T;
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
