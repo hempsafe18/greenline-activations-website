@@ -22,12 +22,12 @@ export interface BlogPost {
   status: "draft" | "published";
 }
 
-async function fetchJson<T>(path: string, revalidate = 300): Promise<T> {
+async function fetchJson<T>(path: string): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const res = await fetch(`${BACKEND}${path}`, {
-      next: { revalidate },
+      cache: "force-cache",
       signal: controller.signal,
     });
     if (!res.ok) {

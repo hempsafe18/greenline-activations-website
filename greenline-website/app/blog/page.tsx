@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllBlogPosts } from "@/lib/blog-api";
 
-export const revalidate = 300; // revalidate cached page every 5 minutes
-
 export const metadata: Metadata = {
   title: "The Activation",
   description:
