@@ -104,6 +104,7 @@ export default function BrandAmbassadorApplicationPage() {
               { name: "about",                       value: form.message },
               { name: "age",                         value: form.age },
               { name: "transport",                   value: form.transport },
+              { name: "category",                    value: "Ambassador" },
             ],
             context: {
               ...(hutk ? { hutk } : {}),
