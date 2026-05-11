@@ -105,11 +105,18 @@ export default function BrandAmbassadorApplicationPage() {
               { name: "age",                         value: form.age },
               { name: "transport",                   value: form.transport },
               { name: "category",                    value: "Ambassador" },
+              { name: "hs_marketable_status",        value: "true" },
             ],
             context: {
               ...(hutk ? { hutk } : {}),
               pageUri: "https://www.greenlineactivations.com/brand-ambassador-application",
               pageName: "Brand Ambassador Application",
+            },
+            legalConsentOptions: {
+              consent: {
+                consentToProcess: true,
+                text: "By submitting this application, I consent to Greenline Activations storing and processing my personal data to evaluate my ambassador application and send relevant communications.",
+              },
             },
           }),
         }
