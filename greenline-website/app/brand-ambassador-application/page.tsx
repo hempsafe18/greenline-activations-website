@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 
 const HUBSPOT_PORTAL_ID = "47886643";
-const HUBSPOT_FORM_ID = "c1a7fbea-19f8-4489-81bf-9cea6efc2b07";
+const HUBSPOT_FORM_ID = "0ec2e181-3744-4aca-8686-1ccc56ce7a83";
 
 const marketsByRegion: { region: string; cities: string[] }[] = [
   {
@@ -98,7 +98,7 @@ export default function BrandAmbassadorApplicationPage() {
               { name: "lastname",                    value: form.lastName },
               { name: "email",                       value: form.email },
               { name: "phone",                       value: form.phone },
-              { name: "florida_market",              value: form.market },
+              { name: "your_market",                  value: form.market },
               { name: "brand_ambassador_experience", value: form.experience },
               { name: "typical_availability",        value: form.availability },
               { name: "about",                       value: form.message },
