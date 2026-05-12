@@ -102,7 +102,7 @@ export default function TermsAndConditionsPage() {
         <div className="space-y-10">
 
           <Block title="14. Payment Terms">
-            <p><strong>50% Deposit Required at Booking.</strong> All activation sprint purchases require a 50% deposit at the time of booking, collected via Stripe. The remaining balance is due prior to the first activation event in the sprint, per the schedule communicated during onboarding.</p>
+            <p><strong>50% Deposit Required at Booking.</strong> All activation sprint purchases require a 50% deposit at the time of booking, collected via Stripe. The remaining balance is due net 14 from the final activation in the sprint, or per the schedule communicated during onboarding.</p>
             <p>By completing checkout, you authorize Greenline Activations to charge the deposit amount to the payment method provided. All prices are in USD. Deposits are processed securely through Stripe.</p>
             <p>Failure to remit the remaining balance by the agreed-upon date may result in suspension or cancellation of the sprint at Greenline Activations&apos; sole discretion, with the deposit forfeited.</p>
           </Block>
