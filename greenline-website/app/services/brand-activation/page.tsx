@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata: Metadata = {
   title: "Brand Activation Staff for Hire | Greenline Activations — Beverage & Hemp Specialists",
   description:
-    "Hire trained brand activation staff for your next campaign. Greenline Activations provides HempSafe-certified ambassadors for retail demos, festivals, and sampling events across Florida. Book online in minutes — no contracts required.",
+    "Hire trained brand activation staff for your next campaign. Greenline Activations provides HempSafe-certified ambassadors for retail demos, festivals, and sampling events across Florida. Book online.",
   openGraph: {
     title: "Brand Activation Staff for Hire | Greenline Activations",
     description:
@@ -104,12 +104,12 @@ const FAQ = [
   {
     question: "How much does brand activation staff cost?",
     answer:
-      "Greenline Activations uses a productized tier model — no custom proposals, no contracts. Pick your tier and quantity, checkout via Stripe, and we deploy. Pricing is transparent and available at greenlineactivations.com/book.",
+      "Greenline Activations uses a productized tier model — no custom proposals, no contracts. Pick your tier and quantity, checkout via Stripe, and we deploy. Pricing is transparent and available online.",
   },
   {
     question: "Do your ambassadors need product knowledge training?",
     answer:
-      "Every Greenline ambassador completes HempSafe™ certification before their first activation. That covers hemp regulations, THC compliance, age restrictions, responsible sampling protocols, and product category knowledge specific to beverage brands.",
+      "Every Greenline ambassador completes HempSafe™ certification before their first activation. That covers hemp regulations, THC compliance, age restrictions, responsible sampling protocols, and category-specific product knowledge.",
   },
   {
     question: "Can I book activation staff without a long-term contract?",
@@ -119,12 +119,12 @@ const FAQ = [
   {
     question: "How do you measure activation ROI?",
     answer:
-      "Every activation is tracked with Tally in real time. After each event, your brand receives a 50-point activation recap covering samples distributed, consumer conversations, purchase conversions, retailer feedback, and next-step recommendations.",
+      "Every activation is tracked with Tally in real time. After each event, your brand receives a 50-point activation recap covering samples distributed, consumer conversations, purchase conversions, and retailer feedback.",
   },
   {
     question: "Do you work with hemp and THC beverage brands?",
     answer:
-      "Yes — hemp and THC beverage activation is our core specialization. Every ambassador is HempSafe™ certified and trained in state-specific hemp regulations, age verification, and responsible sampling for regulated products.",
+      "Yes — hemp and THC beverage activation is our core specialization. Every ambassador is HempSafe™ certified and trained in state-specific hemp regulations, age verification, and responsible sampling.",
   },
   {
     question: "Which Florida cities do you serve?",
@@ -207,7 +207,7 @@ export default function BrandActivationPage() {
               ))}
             </div>
             <p className="mt-6 text-sm text-ink/70 font-display font-bold uppercase tracking-tight">
-              This is what separates a 30% sample-to-purchase conversion rate from an industry average of 15–20%.
+              This is what separates a 40% sample-to-purchase conversion rate from an industry average of 15–20%.
             </p>
           </div>
         </div>
@@ -313,11 +313,11 @@ export default function BrandActivationPage() {
               ))}
             </ul>
             <p className="mt-5 text-sm text-ink/70 leading-relaxed">
-              Your 50-point recap is built from Tally data, not ambassador recollection. That&apos;s why our conversion figures are verifiable — and why our 30% average is a real number, not a marketing claim.
+              Your 50-point recap is built from Tally data, not ambassador recollection. That&apos;s why our conversion figures are verifiable — and why our 40% average is a real number, not a marketing claim.
             </p>
           </div>
           <div className="bg-ink text-bone border-2 border-ink p-8 shadow-brutal-lg text-center">
-            <div className="font-display font-black text-7xl text-canopy leading-none">30%</div>
+            <div className="font-display font-black text-7xl text-canopy leading-none">40%</div>
             <div className="text-[13px] uppercase tracking-widest text-bone/60 mt-3">
               Average Sample-to-Purchase Conversion
             </div>
