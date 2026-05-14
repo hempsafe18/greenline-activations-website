@@ -44,8 +44,8 @@ const SERVICE_SCHEMA = {
 const HEMPSAFE_STATS = [
   { value: "100%", label: "HempSafe™ Certified Ambassadors" },
   { value: "Zero", label: "Compliance Incidents" },
-  { value: "2019", label: "Ambassador Program Established" },
-  { value: "30%", label: "Avg. Sample-to-Purchase Conversion" },
+  { value: "2015", label: "Ambassador Program Established" },
+  { value: "40%", label: "Avg. Sample-to-Purchase Conversion" },
 ];
 
 const CERT_MODULES = [
@@ -97,32 +97,32 @@ const FAQ = [
   {
     question: "What is HempSafe™ certification?",
     answer:
-      "HempSafe™ is a compliance certification program developed specifically for the hemp industry. It covers federal and state hemp regulations, THC content limits and communication guidelines, age verification requirements, responsible sampling protocols, and product knowledge for hemp-derived beverages and other hemp products. More information is available at hempsafe.org.",
+      "HempSafe™ is a compliance certification program developed specifically for the hemp industry. It covers federal and state hemp regulations, THC content limits and communication guidelines, age verification, and responsible sampling practices.",
   },
   {
     question: "Is HempSafe™ certification required to sample hemp beverages in Florida?",
     answer:
-      "There is no Florida law requiring HempSafe™ certification specifically — but the underlying training topics it covers (age verification, responsible sampling, accurate product representation) reflect legal and retailer compliance requirements. Greenline requires 100% HempSafe™ certification for all ambassadors before any hemp activation deployment.",
+      "There is no Florida law requiring HempSafe™ certification specifically — but the underlying training topics it covers (age verification, responsible sampling, accurate product representation) are critical to compliance and risk mitigation.",
   },
   {
     question: "What happens if an uncertified rep makes a compliance error at my activation?",
     answer:
-      "The risk falls on your brand. Retailers have pulled brands from the shelf after compliance incidents tied to sampling reps. Regulators have cited brands — not agencies — for improper health claims made by event staff. Greenline's HempSafe™ requirement exists because your brand's compliance exposure doesn't end at the agency — it extends to every conversation your ambassador has at every retail account.",
+      "The risk falls on your brand. Retailers have pulled brands from the shelf after compliance incidents tied to sampling reps. Regulators have cited brands — not agencies — for improper health claims or age verification failures.",
   },
   {
     question: "Do HempSafe™-certified ambassadors work with Delta-8 and Delta-9 THC brands?",
     answer:
-      "Yes. HempSafe™ training covers both Delta-8 and Delta-9 THC — including the regulatory distinctions between them, Florida-specific compliance requirements, and consumer communication guidelines for each compound. Greenline ambassadors are trained to represent both product types accurately.",
+      "Yes. HempSafe™ training covers both Delta-8 and Delta-9 THC — including the regulatory distinctions between them, Florida-specific compliance requirements, and consumer communication guidelines for each.",
   },
   {
     question: "How does HempSafe™ certification affect conversion rates?",
     answer:
-      "Certified ambassadors convert at higher rates for two reasons: they can answer consumer questions about hemp and THC accurately (reducing hesitation) and they can have compliant, confident conversations that build purchase confidence. Greenline's portfolio average of 30% sample-to-purchase conversion is significantly above the industry average of 15–20%.",
+      "Certified ambassadors convert at higher rates for two reasons: they can answer consumer questions about hemp and THC accurately (reducing hesitation) and they can have compliant, confident conversations that advance purchase intent.",
   },
   {
     question: "Can I verify that the ambassadors sent to my accounts are certified?",
     answer:
-      "Yes. Greenline can confirm HempSafe™ certification status for any ambassador deployed to your accounts. Certification is verified before first deployment and maintained as an ongoing requirement for continued placement on the Greenline roster.",
+      "Yes. Greenline can confirm HempSafe™ certification status for any ambassador deployed to your accounts. Certification is verified before first deployment and maintained as an ongoing requirement.",
   },
 ];
 
@@ -142,7 +142,7 @@ export default function HempSafeCertifiedAmbassadorsPage() {
               <span className="bg-ink text-bone px-2 inline">Compliance Is the Baseline</span>
             </h1>
             <p className="mt-6 max-w-2xl text-lg md:text-xl leading-relaxed text-ink/80">
-              Every Greenline ambassador is HempSafe™ certified before their first deployment. That's not a differentiator — it's a requirement. No other activation agency in Florida holds this standard across their entire roster.
+              Every Greenline ambassador is HempSafe™ certified before their first deployment. That's not a differentiator — it's a requirement. No other activation agency in Florida holds this standard.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/book/" className="btn-primary">
@@ -189,8 +189,8 @@ export default function HempSafeCertifiedAmbassadorsPage() {
               <div className="space-y-4">
                 {[
                   { label: "Zero exceptions", body: "Every ambassador — regardless of experience level — holds current HempSafe™ certification before any hemp activation deployment." },
-                  { label: "Verification on request", body: "Brands can confirm certification status for any ambassador assigned to their accounts. Certification is maintained as a condition of continued roster placement." },
-                  { label: "Established since 2019", body: "Greenline's ambassador program and HempSafe™ certification requirement have been in place since the Florida hemp market's early formation — not adopted in response to incidents." },
+                  { label: "Verification on request", body: "Brands can confirm certification status for any ambassador assigned to their accounts. Certification is maintained as a condition of continued deployment." },
+                  { label: "Established since 2015", body: "Greenline's ambassador program and HempSafe™ certification requirement have been in place since the Florida hemp market's early formation." },
                 ].map((item) => (
                   <div key={item.label} className="border-l-4 border-canopy pl-4">
                     <div className="font-display font-black uppercase tracking-tight text-sm text-canopy">{item.label}</div>
@@ -225,7 +225,7 @@ export default function HempSafeCertifiedAmbassadorsPage() {
               <div className="text-center">
                 <div className="font-display font-black text-5xl text-ink leading-none">Zero</div>
                 <div className="font-display font-bold uppercase tracking-tight text-sm text-ink mt-2">Compliance Incidents</div>
-                <p className="text-xs text-ink/60 mt-2">Across the Greenline portfolio since 2019</p>
+                <p className="text-xs text-ink/60 mt-2">Across the Greenline portfolio since 2015</p>
               </div>
             </div>
           </div>
@@ -240,13 +240,13 @@ export default function HempSafeCertifiedAmbassadorsPage() {
             Certification Drives Conversion
           </h2>
           <p className="text-bone/80 leading-relaxed mb-8">
-            HempSafe™ certification isn't only about compliance protection — it's the reason Greenline's conversion rates are above industry average. Certified ambassadors can answer questions accurately and compliantly, which removes the hesitation that kills hemp beverage purchase decisions.
+            HempSafe™ certification isn't only about compliance protection — it's the reason Greenline's conversion rates are above industry average. Certified ambassadors can answer questions accurately, build consumer confidence, and close sales.
           </p>
           <div className="grid grid-cols-3 gap-4 mb-8">
             {[
-              { value: "30%", label: "Greenline Portfolio Avg." },
+              { value: "40%", label: "Greenline Portfolio Avg." },
               { value: "15–20%", label: "Industry Average" },
-              { value: "+10pt", label: "Certified Uplift" },
+              { value: "+20pt", label: "Certified Uplift" },
             ].map((stat) => (
               <div key={stat.label} className="border-2 border-bone/20 p-5">
                 <div className="font-display font-black text-4xl text-canopy leading-none">{stat.value}</div>
@@ -294,7 +294,7 @@ export default function HempSafeCertifiedAmbassadorsPage() {
             Book Certified Ambassadors
           </h2>
           <p className="mt-6 max-w-xl mx-auto text-ink/70 leading-relaxed text-lg">
-            100% HempSafe™ certified. Zero compliance incidents. 30% avg. sample-to-purchase conversion. No contracts.
+            100% HempSafe™ certified. Zero compliance incidents. 40% avg. sample-to-purchase conversion. No contracts.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/book/" className="btn-primary">Book Your Activation →</Link>
