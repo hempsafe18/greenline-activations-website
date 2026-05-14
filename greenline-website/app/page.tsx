@@ -9,7 +9,7 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata: Metadata = {
   title: "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
   description:
-    "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to National retail — no contracts, no proposals. 40% avg. sample-to-purchase conversion.",
+    "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to National retail — no contracts.",
   openGraph: {
     title: "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
     description:
@@ -122,14 +122,14 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-[1.05fr,1fr] gap-12 items-center">
             <div>
               <span className="tag-street">National · Hemp + Functional Beverage</span>
-              <h1 className="mt-6 font-display font-black uppercase leading-[0.88] tracking-tighter text-ink text-[30px] sm:text-5xl lg:text-[72px]">
-                The Activation Agency Built for{" "}
+              <h1 className="mt-6 font-display font-black uppercase leading-[0.88] tracking-tighter text-ink text-[40px] sm:text-5xl lg:text-[72px]">
+                The Brand Activation Agency Built for{" "}
                 <span className="bg-canopy border-2 border-ink inline-block px-3 -rotate-1">
                   Beverage Brands
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">
-                Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to grocery, liquor stores,
+                Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to smoke shops,
                 specialty retailers, and festivals across the Nation. Pick a tier. Checkout online. Convert.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -171,7 +171,7 @@ export default function HomePage() {
               Greenline is the first productized retail activation agency for beverage brands. No six-week RFP process. No retainer. No ambiguity.
             </p>
             <p className="mt-4 text-bone/70 leading-relaxed max-w-lg">
-              Pick a tier, pick a quantity, checkout with Stripe, and trained ambassadors show up at your accounts — branded, certified, and ready to convert. Other agencies make you wait for a proposal. We make you wait for your recap.
+              Pick a tier, pick a quantity, checkout with Stripe, and trained ambassadors show up at your accounts — branded, certified, and ready to convert. Other agencies make you wait for a proposal.
             </p>
             <div className="mt-6">
               <Link href="/book/#tiers" className="btn-canopy text-sm">
@@ -273,7 +273,7 @@ export default function HomePage() {
               <strong className="font-display font-black">40% sample-to-purchase conversion</strong> — tracked via Tally across every single event.
             </p>
             <p className="mt-4 text-ink/70 leading-relaxed">
-              We don't guess at results. Every activation closes with a 50-point recap covering samples distributed, consumer conversations logged, purchase conversions recorded, retailer relationship observations, and next-step recommendations.
+              We don't guess at results. Every activation closes with a 50-point recap covering samples distributed, consumer conversations logged, purchase conversions recorded, retailer relationships, and next-step recommendations.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/results/" className="btn-street text-sm">
@@ -424,7 +424,7 @@ export default function HomePage() {
             Trusted by Leading Hemp &amp; Adult Beverage Brands
           </h2>
           <p className="max-w-2xl mx-auto text-ink/70 leading-relaxed">
-            From emerging hemp startups to established functional beverage brands, Greenline&apos;s productized model works because it scales without compromise. Every activation gets the same certified staff, the same tracking rigor, and the same 50-point recap — whether it&apos;s your first event or your fiftieth.
+            From emerging hemp startups to established functional beverage brands, Greenline&apos;s productized model works because it scales without compromise. Every activation gets the same certified ambassadors, the same 50-point recap, the same 40% conversion rate.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link href="/services/brand-activation/" className="btn-ghost text-sm">
