@@ -4,7 +4,7 @@ interface Stat {
 }
 
 const DEFAULT_STATS: Stat[] = [
-  { value: "30%", label: "Avg. Sample-to-Purchase Conversion" },
+  { value: "40%", label: "Avg. Sample-to-Purchase Conversion" },
   { value: "100%", label: "HempSafe™ Certified Ambassadors" },
   { value: "50-pt", label: "Post-Activation Recap" },
   { value: "Real-Time", label: "Tally-Tracked Activations" },
