@@ -44,7 +44,7 @@ const SERVICE_SCHEMA = {
 const HEMPSAFE_STATS = [
   { value: "100%", label: "HempSafe™ Certified Ambassadors" },
   { value: "Zero", label: "Compliance Incidents" },
-  { value: "2015", label: "Ambassador Program Established" },
+  { value: "2019", label: "Ambassador Program Established" },
   { value: "30%", label: "Avg. Sample-to-Purchase Conversion" },
 ];
 
@@ -225,7 +225,7 @@ export default function HempSafeCertifiedAmbassadorsPage() {
               <div className="text-center">
                 <div className="font-display font-black text-5xl text-ink leading-none">Zero</div>
                 <div className="font-display font-bold uppercase tracking-tight text-sm text-ink mt-2">Compliance Incidents</div>
-                <p className="text-xs text-ink/60 mt-2">Across the Greenline portfolio since 2015</p>
+                <p className="text-xs text-ink/60 mt-2">Across the Greenline portfolio since 2019</p>
               </div>
             </div>
           </div>
