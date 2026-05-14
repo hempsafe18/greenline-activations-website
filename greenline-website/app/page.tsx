@@ -9,11 +9,11 @@ import { JsonLd } from "@/components/JsonLd";
 export const metadata: Metadata = {
   title: "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
   description:
-    "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to National retail — no contracts, no proposals. 30% avg. sample-to-purchase conversion.",
+    "Greenline Activations deploys HempSafe-certified brand ambassadors for hemp, THC, and adult beverage brands. Pick your tier, checkout online, and ship trained staff to National retail — no contracts, no proposals. 40% avg. sample-to-purchase conversion.",
   openGraph: {
     title: "Greenline Activations | Brand Activation Agency for Beverage & Hemp Brands",
     description:
-      "HempSafe-certified brand activation staff for hemp, THC, and adult beverage brands. Book online, no contracts. 30% avg. sample-to-purchase conversion.",
+      "HempSafe-certified brand activation staff for hemp, THC, and adult beverage brands. Book online, no contracts. 40% avg. sample-to-purchase conversion.",
     url: "https://www.greenlineactivations.com/",
     siteName: "Greenline Activations",
     type: "website",
@@ -122,14 +122,14 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-[1.05fr,1fr] gap-12 items-center">
             <div>
               <span className="tag-street">National · Hemp + Functional Beverage</span>
-              <h1 className="mt-6 font-display font-black uppercase leading-[0.88] tracking-tighter text-ink text-[40px] sm:text-5xl lg:text-[72px]">
-                The Brand Activation Agency Built for{" "}
+              <h1 className="mt-6 font-display font-black uppercase leading-[0.88] tracking-tighter text-ink text-[30px] sm:text-5xl lg:text-[72px]">
+                The Activation Agency Built for{" "}
                 <span className="bg-canopy border-2 border-ink inline-block px-3 -rotate-1">
                   Beverage Brands
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-lg md:text-xl leading-relaxed text-ink/80">
-                Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to smoke shops,
+                Deploy <span className="font-display font-bold">HempSafe™-certified ambassadors</span> to grocery, liquor stores,
                 specialty retailers, and festivals across the Nation. Pick a tier. Checkout online. Convert.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -266,11 +266,11 @@ export default function HomePage() {
             <span className="tag">Conversion Data</span>
             <h2 className="mt-4 font-display font-black uppercase text-ink text-4xl md:text-5xl leading-[0.95] tracking-tight">
               Proven Results:{" "}
-              <span className="text-canopy">30% Sample-to-Purchase Conversion</span>
+              <span className="text-canopy">40% Sample-to-Purchase Conversion</span>
             </h2>
             <p className="mt-5 text-ink/80 leading-relaxed">
               The industry average for in-store sampling is 15–20%. Greenline activations average{" "}
-              <strong className="font-display font-black">30% sample-to-purchase conversion</strong> — tracked via Tally across every single event.
+              <strong className="font-display font-black">40% sample-to-purchase conversion</strong> — tracked via Tally across every single event.
             </p>
             <p className="mt-4 text-ink/70 leading-relaxed">
               We don't guess at results. Every activation closes with a 50-point recap covering samples distributed, consumer conversations logged, purchase conversions recorded, retailer relationship observations, and next-step recommendations.
