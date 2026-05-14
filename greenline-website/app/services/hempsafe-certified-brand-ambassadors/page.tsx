@@ -190,7 +190,7 @@ export default function HempSafeCertifiedAmbassadorsPage() {
                 {[
                   { label: "Zero exceptions", body: "Every ambassador — regardless of experience level — holds current HempSafe™ certification before any hemp activation deployment." },
                   { label: "Verification on request", body: "Brands can confirm certification status for any ambassador assigned to their accounts. Certification is maintained as a condition of continued roster placement." },
-                  { label: "Established since 2015", body: "Greenline's ambassador program and HempSafe™ certification requirement have been in place since the Florida hemp market's early formation — not adopted in response to incidents." },
+                  { label: "Established since 2019", body: "Greenline's ambassador program and HempSafe™ certification requirement have been in place since the Florida hemp market's early formation — not adopted in response to incidents." },
                 ].map((item) => (
                   <div key={item.label} className="border-l-4 border-canopy pl-4">
                     <div className="font-display font-black uppercase tracking-tight text-sm text-canopy">{item.label}</div>
